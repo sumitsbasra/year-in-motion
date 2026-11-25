@@ -9,7 +9,7 @@
     href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔄</text></svg>">
 
   <link
-    href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap"
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&family=Unbounded:wght@400..900&display=swap"
     rel="stylesheet">
   <style>
     :root {
@@ -31,8 +31,8 @@
       --rose: #FF7A45;
       --strava-orange: #FC4C02;
       /* Display face for big numbers and headlines; body copy stays DM Sans */
-      --font-display: 'DM Sans';
-      --display-tracking: -0.05em;
+      --font-display: 'Unbounded';
+      --display-tracking: -0.04em;
     }
 
     * {
@@ -2224,6 +2224,8 @@
       font-family: var(--font-display), 'DM Sans', system-ui, sans-serif;
     }
 
+    .stat-huge, .intro-year { white-space: nowrap; }
+
     .stat-huge {
       font-weight: 700;
       font-size: clamp(4.5rem, 22vw, 14rem);
@@ -2950,7 +2952,7 @@
         <div class="stat-content">
           <div class="label">Best Month</div>
           <div class="stat-huge"
-            style="font-family: var(--font-display), 'DM Sans', sans-serif; font-weight: 700; letter-spacing: var(--display-tracking); transform: none; line-height: 1.2; padding: 0.2em 0.5em; overflow: visible; width: 100vw; max-width: none; margin-left: -24px; margin-right: -24px;">
+            style="line-height: 1.1;">
             Month</div>
           <div class="context">You were <em>on fire</em>.</div>
           <div class="mini-cards-row">
@@ -3055,6 +3057,34 @@
       });
     }
 
+    function formatCounter(val, target) {
+      if (target >= 1000) return Math.floor(val).toLocaleString();
+      if (target < 10 && !Number.isInteger(target)) return val.toFixed(1);
+      return String(Math.floor(val));
+    }
+
+    // Wide display faces: shrink each card's big number so its final value (plus unit) fits the screen.
+    function fitDisplayText(card) {
+      if (!card) return;
+      const avail = Math.min(window.innerWidth - 48, 720);
+      card.querySelectorAll('.stat-huge, .intro-year').forEach(el => {
+        el.style.fontSize = '';
+        const counter = el.querySelector('.counter');
+        const saved = counter ? counter.textContent : null;
+        if (counter) counter.textContent = formatCounter(parseFloat(counter.dataset.target) || 0, parseFloat(counter.dataset.target) || 0);
+        const prevDisplay = el.style.display;
+        el.style.display = 'inline-block';
+        const width = el.offsetWidth;
+        el.style.display = prevDisplay;
+        if (counter) counter.textContent = saved;
+        if (width > avail) {
+          const size = parseFloat(getComputedStyle(el).fontSize);
+          el.style.fontSize = `${Math.floor(size * avail / width)}px`;
+        }
+      });
+    }
+    window.addEventListener('resize', () => fitDisplayText(document.querySelector('.story-card.active')));
+
     function animateCounters() {
       const card = document.querySelector('.story-card[data-index="' + currentIndex + '"]');
       if (!card) return;
@@ -3065,10 +3095,7 @@
         function update(now) {
           const progress = Math.min((now - start) / duration, 1);
           const eased = 1 - Math.pow(1 - progress, 3);
-          let val = target * eased;
-          if (target >= 1000) counter.textContent = Math.floor(val).toLocaleString();
-          else if (target < 10 && !Number.isInteger(target)) counter.textContent = val.toFixed(1);
-          else counter.textContent = Math.floor(val);
+          counter.textContent = formatCounter(target * eased, target);
           if (progress < 1) requestAnimationFrame(update);
         }
         requestAnimationFrame(update);
@@ -3091,6 +3118,7 @@
         }, 600);
       }
 
+      fitDisplayText(nextCard);
       nextCard.classList.add('active');
       currentIndex = index;
       updateProgressBars();
@@ -3609,6 +3637,7 @@
         createKudosHearts();
         updateProgressBars();
         updateGradient(0);
+        document.fonts.ready.then(() => fitDisplayText(document.querySelector('.story-card.active')));
         startAutoAdvance();
         debugLog('UI Initialization complete');
       } catch (error) {
@@ -4426,16 +4455,25 @@
       ctx.fillRect(0, 0, W, H);
 
       // Header
-      ctx.fillStyle = C.ink;
-      ctx.font = `700 200px ${DISPLAY}, system-ui, sans-serif`;
+      const fitFont = (text, weight, maxSize, maxWidth) => {
+        ctx.font = `${weight} ${maxSize}px ${DISPLAY}, system-ui, sans-serif`;
+        const w = ctx.measureText(text).width;
+        const size = w > maxWidth ? Math.floor(maxSize * maxWidth / w) : maxSize;
+        ctx.font = `${weight} ${size}px ${DISPLAY}, system-ui, sans-serif`;
+        return size;
+      };
       ctx.textBaseline = 'alphabetic';
-      ctx.textAlign = 'left';
-      ctx.fillText(String(RECAP_YEAR), PAD - 8, 250);
       ctx.fillStyle = C.muted;
       ctx.font = '400 30px "DM Mono", ui-monospace, monospace';
       ctx.textAlign = 'right';
-      ctx.fillText(`${stats.totalActivities} ACTIVITIES`, W - PAD, 196);
-      ctx.fillText(posterDateRange(), W - PAD, 240);
+      const metaLines = [`${stats.totalActivities} ACTIVITIES`, posterDateRange()];
+      const metaW = Math.max(...metaLines.map(t => ctx.measureText(t).width));
+      ctx.fillText(metaLines[0], W - PAD, 196);
+      ctx.fillText(metaLines[1], W - PAD, 240);
+      ctx.fillStyle = C.ink;
+      ctx.textAlign = 'left';
+      fitFont(String(RECAP_YEAR), 700, 200, W - PAD * 2 - metaW - 40);
+      ctx.fillText(String(RECAP_YEAR), PAD - 4, 250);
 
       // Route grid
       const { routes, longestId } = selectPosterRoutes(activitiesData);
@@ -4458,7 +4496,7 @@
         // No GPS routes (indoor / strength only): lead with total distance instead.
         ctx.fillStyle = C.ink;
         ctx.textAlign = 'center';
-        ctx.font = `700 220px ${DISPLAY}, system-ui, sans-serif`;
+        fitFont(Math.round(getDistanceValue(stats.totalDistance)).toLocaleString(), 700, 220, W - PAD * 2);
         ctx.fillText(Math.round(getDistanceValue(stats.totalDistance)).toLocaleString(), W / 2, gridTop + gridH / 2);
         ctx.fillStyle = C.muted;
         ctx.font = '500 44px "DM Sans", system-ui, sans-serif';
@@ -4478,7 +4516,7 @@
       footer.forEach(([v, u], i) => {
         const x = PAD + i * colW;
         ctx.fillStyle = C.ink;
-        ctx.font = `700 64px ${DISPLAY}, system-ui, sans-serif`;
+        fitFont(v, 700, 64, colW - 24);
         ctx.fillText(v, x, 1714);
         ctx.fillStyle = C.muted;
         ctx.font = '500 30px "DM Sans", system-ui, sans-serif';
