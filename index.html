@@ -2303,6 +2303,43 @@
     .hm-legend { display: flex; align-items: center; justify-content: flex-end; gap: 3px; margin-top: 8px; font-size: 11px; color: var(--dim); }
     .hm-legend .heatmap-cell { width: 9px; height: 9px; display: inline-block; }
 
+    .story-card-cut { display: none; }
+
+    /* Playback intro */
+    .card-intro .intro-content { width: min(360px, calc(100vw - 48px)); }
+    .intro-grid { margin-top: 28px; width: 100%; }
+    .heatmap-cell.pending { background: var(--surface-2) !important; box-shadow: none !important; }
+    .intro-ticker {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 12px;
+      font: 500 13px 'DM Mono', ui-monospace, monospace;
+      color: var(--dim);
+      font-variant-numeric: tabular-nums;
+    }
+    .intro-ticker #introDist { color: var(--cream); }
+    .card-intro .intro-wrapped, .card-intro .intro-name, .card-intro .tap-hint {
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .card-intro.played .intro-wrapped, .card-intro.played .intro-name, .card-intro.played .tap-hint { opacity: 1; transform: none; }
+    .card-intro.played .intro-name { transition-delay: 0.15s; }
+
+    /* Longest day */
+    .longest-content { width: min(360px, calc(100vw - 48px)); }
+    .longest-route { width: min(260px, 62vw); height: auto; display: block; margin: 8px auto 4px; overflow: visible; }
+    .longest-route path { fill: none; stroke: var(--orange-hot); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+    .longest-reveal { opacity: 0; transform: translateY(12px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .card-longest.played .longest-reveal { opacity: 1; transform: none; }
+    .card-longest .context { margin-top: 12px; }
+    .card-longest .mini-card { opacity: 1; transform: none; }
+    .route-note { margin-top: 14px; font: 400 11px 'DM Mono', ui-monospace, monospace; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dim); }
+
+    /* Finale: buttons arrive once the poster has drawn */
+    .card-summary .poster-actions { opacity: 0; transform: translateY(10px); transition: opacity 0.5s ease, transform 0.5s ease; }
+    .card-summary.played .poster-actions { opacity: 1; transform: none; }
+
     .login-subtitle, .onboarding-subtitle { font-style: normal; color: var(--dim); }
     .login-logo, .onboarding-title, .onboarding-title span, .error-title, .settings-header h2 {
       background: none;
@@ -2604,6 +2641,8 @@
         <div class="intro-content">
           <div class="intro-label">recap.fit</div>
           <div class="intro-year" data-recap-year>2026</div>
+          <div class="heatmap intro-grid" id="introGrid" role="img" aria-label="Your year, day by day"></div>
+          <div class="intro-ticker" aria-hidden="true"><span id="introDate">JAN 1</span><span><span id="introDist">0</span> <span id="introUnit">mi</span></span></div>
           <div class="intro-wrapped">Your year in motion</div>
           <div class="intro-name" id="introRange"></div>
         </div>
@@ -2641,8 +2680,28 @@
 
     </div>
 
+    <!-- Longest day -->
+    <div class="story-card card-longest" data-index="2">
+      <div class="hero-section">
+        <div class="stat-content longest-content">
+          <div class="label">Your longest day</div>
+          <svg class="longest-route" viewBox="0 0 300 300" aria-hidden="true"><path id="longestPath" d=""></path></svg>
+          <div class="longest-reveal">
+            <div class="stat-huge"><span id="longestNum">0</span><span class="stat-unit" id="longestUnit">mi</span></div>
+            <div class="context" id="longestDate"></div>
+            <div class="mini-cards-row">
+              <div class="mini-card"><div class="mini-card-value" id="longestTime">--</div><div class="mini-card-label">time</div></div>
+              <div class="mini-card"><div class="mini-card-value" id="longestPace">--</div><div class="mini-card-label" id="longestPaceLabel">pace</div></div>
+              <div class="mini-card"><div class="mini-card-value" id="longestClimb">--</div><div class="mini-card-label">climbed</div></div>
+            </div>
+            <div class="route-note" id="longestNote">Start and finish hidden</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- 2: Time -->
-    <div class="story-card card-time" data-index="2">
+    <div class="story-card-cut card-time" data-index="2">
       <div class="noise"></div>
       <div class="grid-overlay"></div>
       <div class="hero-section">
@@ -2691,7 +2750,7 @@
     </div>
 
     <!-- 4: Heart Rate -->
-    <div class="story-card card-heartrate" data-index="4">
+    <div class="story-card-cut card-heartrate" data-index="4">
       <div class="noise"></div>
       <div class="grid-overlay"></div>
       <div class="hero-section">
@@ -2720,7 +2779,7 @@
     </div>
 
     <!-- 5: Calories -->
-    <div class="story-card card-calories" data-index="5">
+    <div class="story-card-cut card-calories" data-index="5">
       <div class="noise"></div>
       <div class="grid-overlay"></div>
       <div class="hero-section">
@@ -2744,7 +2803,7 @@
     </div>
 
     <!-- 6: Activities -->
-    <div class="story-card card-activities" data-index="6">
+    <div class="story-card-cut card-activities" data-index="6">
       <div class="noise"></div>
       <div class="grid-overlay"></div>
       <div class="hero-section">
@@ -2810,7 +2869,7 @@
 
 
     <!-- 9: Kudos -->
-    <div class="story-card card-kudos" data-index="8">
+    <div class="story-card-cut card-kudos" data-index="8">
       <div class="noise"></div>
       <div class="grid-overlay"></div>
       <div class="kudos-field" id="kudosField"></div>
@@ -2839,7 +2898,7 @@
     </div>
 
     <!-- 10: Routes & Segments -->
-    <div class="story-card card-routes" data-index="9">
+    <div class="story-card-cut card-routes" data-index="9">
       <div class="noise"></div>
       <div class="grid-overlay"></div>
       <div class="hero-section">
@@ -2904,7 +2963,7 @@
     </div>
 
     <!-- 12: Records -->
-    <div class="story-card card-records" data-index="11">
+    <div class="story-card-cut card-records" data-index="11">
       <div class="noise"></div>
       <div class="grid-overlay"></div>
       <div class="hero-section">
@@ -2989,7 +3048,10 @@
   </div> <!-- end wrapped-content -->
 
   <script>
-    const TOTAL_CARDS = 14;
+    // Cards in the deck, in page order. Cut cards use .story-card-cut and stay out of the flow.
+    const DECK = Array.from(document.querySelectorAll('.story-card'));
+    DECK.forEach((card, i) => { card.dataset.index = i; });
+    const TOTAL_CARDS = DECK.length;
     const AUTO_ADVANCE_TIME = 7500;
     let currentIndex = 0;
     let autoAdvanceTimer = null;
@@ -3121,12 +3183,16 @@
       fitDisplayText(nextCard);
       nextCard.classList.add('active');
       currentIndex = index;
+      runCardAnimation(nextCard);
       updateProgressBars();
       setTimeout(animateCounters, 300);
     }
 
     function goToCard(index) { showCard(index); resetAutoAdvance(); }
-    function nextCard() { if (currentIndex < TOTAL_CARDS - 1) { showCard(currentIndex + 1); resetAutoAdvance(); } }
+    function nextCard() {
+      if (currentAnim && !currentAnim.done) { currentAnim.finish(); resetAutoAdvance(); return; }
+      if (currentIndex < TOTAL_CARDS - 1) { showCard(currentIndex + 1); resetAutoAdvance(); }
+    }
     function prevCard() { if (currentIndex > 0) { showCard(currentIndex - 1); resetAutoAdvance(); } }
     function startAutoAdvance() { if (currentIndex < TOTAL_CARDS - 1) autoAdvanceTimer = setTimeout(nextCard, AUTO_ADVANCE_TIME); }
     function resetAutoAdvance() { clearTimeout(autoAdvanceTimer); startAutoAdvance(); }
@@ -3624,6 +3690,8 @@
         // Re-render charts with real data
         debugLog('Rendering charts...');
         createHeatmap();
+        introDays = createHeatmap('introGrid', { legend: false });
+        updateLongestCard();
         createTimeBars(stats.timeDistribution);
         createMonthBars(stats.monthlyDistance);
 
@@ -3638,6 +3706,7 @@
         updateProgressBars();
         updateGradient(0);
         document.fonts.ready.then(() => fitDisplayText(document.querySelector('.story-card.active')));
+        runCardAnimation(DECK[0]);
         startAutoAdvance();
         debugLog('UI Initialization complete');
       } catch (error) {
@@ -4013,24 +4082,24 @@
       const speedUnit = getSpeedUnit();
 
       // Main Counters (with unit-aware conversions)
-      updateCounter('[data-index="1"] .counter', Math.round(getDistanceValue(stats.totalDistance)));
-      updateCounter('[data-index="2"] .counter', stats.totalTimeHours);
-      updateCounter('[data-index="3"] .counter', Math.round(getElevationValue(stats.totalElevation)));
-      updateCounter('[data-index="4"] .counter', stats.totalHeartBeatsMillions);
-      updateCounter('[data-index="5"] .counter', stats.totalCaloriesK);
-      updateCounter('[data-index="6"] .counter', stats.totalActivities);
-      updateCounter('[data-index="7"] .counter', stats.longestStreak);
-      updateCounter('[data-index="8"] .counter', stats.kudos);
-      updateCounter('[data-index="9"] .counter', stats.uniqueRoutesCount);
-      updateCounter('[data-index="11"] .counter', stats.prs);
+      updateCounter('.card-distance .counter', Math.round(getDistanceValue(stats.totalDistance)));
+      updateCounter('.card-time .counter', stats.totalTimeHours);
+      updateCounter('.card-elevation .counter', Math.round(getElevationValue(stats.totalElevation)));
+      updateCounter('.card-heartrate .counter', stats.totalHeartBeatsMillions);
+      updateCounter('.card-calories .counter', stats.totalCaloriesK);
+      updateCounter('.card-activities .counter', stats.totalActivities);
+      updateCounter('.card-streak .counter', stats.longestStreak);
+      updateCounter('.card-kudos .counter', stats.kudos);
+      updateCounter('.card-routes .counter', stats.uniqueRoutesCount);
+      updateCounter('.card-records .counter', stats.prs);
 
       // Update main counter units
-      const distanceCard = document.querySelector('[data-index="1"]');
+      const distanceCard = document.querySelector('.card-distance');
       if (distanceCard) {
         const unitEl = distanceCard.querySelector('.stat-unit');
         if (unitEl) unitEl.textContent = distUnit;
       }
-      const elevationCard = document.querySelector('[data-index="3"]');
+      const elevationCard = document.querySelector('.card-elevation');
       if (elevationCard) {
         const unitEl = elevationCard.querySelector('.stat-unit');
         if (unitEl) unitEl.textContent = elevUnit;
@@ -4131,7 +4200,7 @@
       }
 
       // Morning Card
-      const timeEl = document.querySelector('[data-index="10"] .stat-huge');
+      const timeEl = document.querySelector('.card-morning .stat-huge');
       if (timeEl) timeEl.innerHTML = `${stats.commonStartTime}<span class="stat-unit">${stats.commonStartTimeUnit}</span>`;
       updateMiniCard('.card-morning', 0, stats.formatted.morningPercent);
       updateMiniCard('.card-morning', 1, stats.formatted.earliestStart);
@@ -4157,7 +4226,7 @@
 
       // Best Month Card
       const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-      const monthEl = document.querySelector('[data-index="12"] .stat-huge');
+      const monthEl = document.querySelector('.card-month .stat-huge');
       if (monthEl) monthEl.textContent = months[stats.bestMonth.index];
 
       updateMiniCard('.card-month', 0, Math.round(getDistanceValue(stats.bestMonth.distance)));
@@ -4418,7 +4487,31 @@
       return 6;
     }
 
-    function drawRouteShape(ctx, pts, cx, cy, box) {
+    let posterState = null;
+
+    // Draw the poster's route grid at animation time t (0..1): routes stroke in one after another,
+    // in date order. t = 1 is the finished poster, which is what Save/Share export.
+    function drawPosterRoutes(t) {
+      if (!posterState) return;
+      const { ctx, routes, longestId, cols, cell, x0, y0, lw, gridTop, gridBottom } = posterState;
+      const C = POSTER_COLORS;
+      ctx.fillStyle = C.paper;
+      ctx.fillRect(0, gridTop - 10, POSTER.W, gridBottom - gridTop + 20);
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+      const n = routes.length, spread = 0.7, each = 1 - spread;
+      routes.forEach((r, i) => {
+        const p = Math.max(0, Math.min(1, (t - (n > 1 ? (i / (n - 1)) * spread : 0)) / each));
+        if (p <= 0) return;
+        const cx = x0 + (i % cols + 0.5) * cell, cy = y0 + (Math.floor(i / cols) + 0.5) * cell;
+        const isLongest = r.id === longestId;
+        ctx.strokeStyle = isLongest ? C.accent : C.ink;
+        ctx.lineWidth = isLongest ? lw * 1.6 : lw;
+        drawRouteShape(ctx, r.pts, cx, cy, cell * 0.8, p);
+      });
+    }
+
+    function drawRouteShape(ctx, pts, cx, cy, box, progress = 1) {
       const lat0 = pts.reduce((s, p) => s + p[0], 0) / pts.length;
       const k = Math.cos(lat0 * Math.PI / 180);
       const xy = pts.map(p => [p[1] * k, -p[0]]);
@@ -4426,8 +4519,9 @@
       const minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys);
       const scale = box / Math.max(maxX - minX, maxY - minY, 1e-9);
       const ox = cx - ((minX + maxX) / 2) * scale, oy = cy - ((minY + maxY) / 2) * scale;
+      const count = Math.max(2, Math.ceil(xy.length * progress));
       ctx.beginPath();
-      xy.forEach((p, i) => { const x = p[0] * scale + ox, y = p[1] * scale + oy; i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); });
+      xy.slice(0, count).forEach((p, i) => { const x = p[0] * scale + ox, y = p[1] * scale + oy; i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); });
       ctx.stroke();
     }
 
@@ -4484,14 +4578,8 @@
         const cols = posterColumns(routes.length), rows = Math.ceil(routes.length / cols);
         const cell = Math.min(gridW / cols, gridH / rows);
         const x0 = PAD + (gridW - cell * cols) / 2, y0 = gridTop + (gridH - cell * rows) / 2;
-        const lw = Math.max(3, cell / 30);
-        routes.forEach((r, i) => {
-          const cx = x0 + (i % cols + 0.5) * cell, cy = y0 + (Math.floor(i / cols) + 0.5) * cell;
-          const isLongest = r.id === longestId;
-          ctx.strokeStyle = isLongest ? C.accent : C.ink;
-          ctx.lineWidth = isLongest ? lw * 1.6 : lw;
-          drawRouteShape(ctx, r.pts, cx, cy, cell * 0.8);
-        });
+        posterState = { ctx, routes, longestId, cols, cell, x0, y0, lw: Math.max(3, cell / 30), gridTop, gridBottom };
+        drawPosterRoutes(1);
       } else {
         // No GPS routes (indoor / strength only): lead with total distance instead.
         ctx.fillStyle = C.ink;
@@ -4541,6 +4629,8 @@
     }
 
     function posterBlob(canvas) {
+      if (currentAnim && !currentAnim.done) currentAnim.finish();
+      drawPosterRoutes(1);
       return new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
     }
 
@@ -4585,25 +4675,28 @@
 
     // Year grid: one row per month, one cell per day. Brightness = minutes moving that day.
     // Days after today are outlined so the grid visibly fills in as the year goes.
-    function createHeatmap() {
-      const container = document.getElementById('heatmap');
+    // Returns the past days in date order with each day's distance (metres), for the Playback animation.
+    function createHeatmap(containerId = 'heatmap', { legend = true } = {}) {
+      const container = document.getElementById(containerId);
       container.innerHTML = '';
-      const minutes = {};
+      const minutes = {}, metres = {};
       activitiesData.forEach(a => {
         const d = new Date(a.start_date);
         if (d.getFullYear() !== RECAP_YEAR) return;
         const key = `${d.getMonth()}-${d.getDate()}`;
         minutes[key] = (minutes[key] || 0) + (a.moving_time || 0) / 60;
+        metres[key] = (metres[key] || 0) + (a.distance || 0);
       });
       const today = new Date();
       const isCurrentYear = today.getFullYear() === RECAP_YEAR;
       const labels = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
+      const days = [];
       for (let m = 0; m < 12; m++) {
         const row = document.createElement('div');
         row.className = 'hm-row';
         row.innerHTML = `<span class="hm-label">${labels[m]}</span>`;
-        const days = document.createElement('div');
-        days.className = 'hm-days';
+        const rowDays = document.createElement('div');
+        rowDays.className = 'hm-days';
         const len = new Date(RECAP_YEAR, m + 1, 0).getDate();
         for (let d = 1; d <= 31; d++) {
           const cell = document.createElement('div');
@@ -4611,19 +4704,140 @@
           if (d > len) cell.classList.add('hm-none');
           else if (isCurrentYear && new Date(RECAP_YEAR, m, d) > today) cell.classList.add('hm-future');
           else {
-            const min = minutes[`${m}-${d}`] || 0;
+            const key = `${m}-${d}`, min = minutes[key] || 0;
             if (min > 0) cell.classList.add(min < 30 ? 'l1' : min < 60 ? 'l2' : min < 90 ? 'l3' : 'l4');
             if (isCurrentYear && m === today.getMonth() && d === today.getDate()) cell.classList.add('hm-today');
+            days.push({ el: cell, date: new Date(RECAP_YEAR, m, d), metres: metres[key] || 0 });
           }
-          days.appendChild(cell);
+          rowDays.appendChild(cell);
         }
-        row.appendChild(days);
+        row.appendChild(rowDays);
         container.appendChild(row);
       }
-      const legend = document.createElement('div');
-      legend.className = 'hm-legend';
-      legend.innerHTML = '<span>Less</span><i class="heatmap-cell l1"></i><i class="heatmap-cell l2"></i><i class="heatmap-cell l3"></i><i class="heatmap-cell l4"></i><span>More</span>';
-      container.appendChild(legend);
+      if (legend) {
+        const el = document.createElement('div');
+        el.className = 'hm-legend';
+        el.innerHTML = '<span>Less</span><i class="heatmap-cell l1"></i><i class="heatmap-cell l2"></i><i class="heatmap-cell l3"></i><i class="heatmap-cell l4"></i><span>More</span>';
+        container.appendChild(el);
+      }
+      return days;
+    }
+
+    // ============================================
+    // CARD ANIMATIONS: show, then tell
+    // Each returns { done, finish() }. Tapping forward during an animation finishes it instead of
+    // skipping the card; reduced-motion users get the end state straight away.
+    // ============================================
+
+    let currentAnim = null;
+    let introDays = [];
+    const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const easeInOut = t => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
+
+    function makeAnimation(duration, onFrame, onDone) {
+      const anim = { done: false };
+      const start = performance.now();
+      let raf;
+      const end = () => {
+        if (anim.done) return;
+        anim.done = true;
+        cancelAnimationFrame(raf);
+        onFrame(1);
+        if (onDone) onDone();
+      };
+      anim.finish = end;
+      const tick = now => {
+        if (anim.done) return;
+        const t = Math.min((now - start) / duration, 1);
+        onFrame(t);
+        if (t < 1) raf = requestAnimationFrame(tick); else end();
+      };
+      raf = requestAnimationFrame(tick);
+      return anim;
+    }
+
+    function playIntro(card) {
+      card.classList.remove('played');
+      const days = introDays;
+      const dateEl = document.getElementById('introDate'), distEl = document.getElementById('introDist');
+      document.getElementById('introUnit').textContent = getDistanceUnit();
+      days.forEach(d => d.el.classList.add('pending'));
+      const cumulative = [];
+      days.reduce((sum, d, i) => (cumulative[i] = sum + d.metres), 0);
+      let shown = 0;
+      return makeAnimation(3200, t => {
+        const k = Math.round(easeInOut(t) * days.length);
+        for (; shown < k; shown++) days[shown].el.classList.remove('pending');
+        const last = days[Math.max(0, k - 1)];
+        if (last) {
+          dateEl.textContent = last.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase();
+          distEl.textContent = Math.round(getDistanceValue(cumulative[Math.max(0, k - 1)])).toLocaleString();
+        }
+      }, () => card.classList.add('played'));
+    }
+
+    function playLongest(card) {
+      card.classList.remove('played');
+      const path = document.getElementById('longestPath');
+      if (!path.getAttribute('d')) { card.classList.add('played'); return { done: true, finish() {} }; }
+      const len = path.getTotalLength();
+      path.style.strokeDasharray = len;
+      return makeAnimation(2200, t => { path.style.strokeDashoffset = len * (1 - easeInOut(t)); },
+        () => card.classList.add('played'));
+    }
+
+    function playFinale(card) {
+      card.classList.remove('played');
+      if (!posterState) { card.classList.add('played'); return { done: true, finish() {} }; }
+      return makeAnimation(2600, t => drawPosterRoutes(t), () => card.classList.add('played'));
+    }
+
+    const CARD_ANIMATIONS = { 'card-intro': playIntro, 'card-longest': playLongest, 'card-summary': playFinale };
+
+    function runCardAnimation(card) {
+      if (currentAnim && !currentAnim.done) currentAnim.finish();
+      currentAnim = null;
+      const key = Object.keys(CARD_ANIMATIONS).find(k => card.classList.contains(k));
+      if (!key) return;
+      currentAnim = CARD_ANIMATIONS[key](card);
+      if (prefersReducedMotion()) currentAnim.finish();
+    }
+
+    // Longest day card: the longest activity's route drawn as an SVG path, ends trimmed for privacy.
+    function updateLongestCard() {
+      const year = activitiesData.filter(a => new Date(a.start_date).getFullYear() === RECAP_YEAR && a.distance > 0);
+      if (!year.length) return;
+      const a = year.reduce((m, x) => (x.distance > m.distance ? x : m), year[0]);
+      const pts = a.map && a.map.summary_polyline ? trimRouteEnds(decodePolyline(a.map.summary_polyline), POSTER.TRIM_M) : null;
+      const path = document.getElementById('longestPath');
+      if (pts && pts.length > 1) {
+        const lat0 = pts.reduce((sum, q) => sum + q[0], 0) / pts.length, k = Math.cos(lat0 * Math.PI / 180);
+        const xy = pts.map(q => [q[1] * k, -q[0]]);
+        const xs = xy.map(q => q[0]), ys = xy.map(q => q[1]);
+        const minX = Math.min(...xs), minY = Math.min(...ys);
+        const span = Math.max(Math.max(...xs) - minX, Math.max(...ys) - minY, 1e-9), scale = 276 / span;
+        const ox = 150 - ((Math.max(...xs) - minX) * scale) / 2, oy = 150 - ((Math.max(...ys) - minY) * scale) / 2;
+        path.setAttribute('d', 'M' + xy.map(q => `${((q[0] - minX) * scale + ox).toFixed(1)} ${((q[1] - minY) * scale + oy).toFixed(1)}`).join('L'));
+        document.getElementById('longestNote').hidden = false;
+      } else {
+        path.setAttribute('d', '');
+        document.getElementById('longestNote').hidden = true;
+      }
+      const dist = getDistanceValue(a.distance);
+      document.getElementById('longestNum').textContent = dist >= 100 ? Math.round(dist).toLocaleString() : dist.toFixed(1);
+      document.getElementById('longestUnit').textContent = getDistanceUnit();
+      const date = new Date(a.start_date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+      document.getElementById('longestDate').innerHTML = `<em>${date}</em>${a.name ? `. ${a.name.replace(/[<>&]/g, '')}` : ''}`;
+      document.getElementById('longestTime').textContent = formatDuration(a.moving_time);
+      const isRide = /Ride/.test(a.sport_type || a.type || '');
+      if (isRide) {
+        document.getElementById('longestPace').textContent = getSpeedValue(a.average_speed || a.distance / (a.moving_time || 1)).toFixed(1);
+        document.getElementById('longestPaceLabel').textContent = getSpeedUnit();
+      } else {
+        document.getElementById('longestPace').textContent = formatPace((a.moving_time || 0) / (dist || 1));
+        document.getElementById('longestPaceLabel').textContent = `/${getDistanceUnit()}`;
+      }
+      document.getElementById('longestClimb').textContent = `${Math.round(getElevationValue(a.total_elevation_gain || 0)).toLocaleString()}${getElevationUnit()}`;
     }
 
     function createTimeBars(data) {
