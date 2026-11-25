@@ -41,7 +41,7 @@ After creating your app, you'll see:
 5. **You'll be redirected to Strava's authorization page** — This is part of OAuth 2.0 security. Even though you created the API app, you still need to authorize it to access your data. This happens every time you connect (or when your session expires).
 6. Click **Authorize** on Strava's page
 7. You'll be redirected back to recap.fit
-8. Enjoy your personalized 2025 Wrapped! 🎉
+8. Enjoy your personalized 2026 Wrapped! 🎉
 
 **Why the Strava redirect?**
 This is OAuth 2.0 working as designed. Creating a Strava API app gives you credentials, but you still need to explicitly authorize those credentials to access your data. This security measure ensures no app can access your Strava data without your explicit permission—even your own app!

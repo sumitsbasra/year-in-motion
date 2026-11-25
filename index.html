@@ -2149,7 +2149,7 @@
 <body>
   <!-- Login Screen -->
   <div class="login-screen" id="loginScreen">
-    <div class="login-logo">2025</div>
+    <div class="login-logo" data-recap-year>2026</div>
     <div class="login-subtitle">Wrapped</div>
     <p class="login-description">
       Connect your Strava account to see a personalized year in review with all your stats, PRs, and achievements.
@@ -2186,7 +2186,7 @@
       <div class="onboarding-content">
         <div class="onboarding-icon">🏃‍♂️</div>
         <h1 class="onboarding-title">Your Year in Motion</h1>
-        <p class="onboarding-subtitle">Get your personalized 2025 fitness recap in 2 minutes</p>
+        <p class="onboarding-subtitle">Get your personalized <span data-recap-year>2026</span> fitness recap in 2 minutes</p>
         <p class="onboarding-description">
           This app runs entirely in your browser. You'll connect your own Strava API access — your data never touches
           our servers.
@@ -2427,7 +2427,7 @@
       <div class="hero-section">
         <div class="intro-content">
           <div class="intro-label">Your Year in Motion</div>
-          <div class="intro-year">2025</div>
+          <div class="intro-year" data-recap-year>2026</div>
           <div class="intro-wrapped">Wrapped</div>
           <div class="intro-name">Your Athletic Journey</div>
         </div>
@@ -2804,7 +2804,7 @@
     <div class="noise"></div>
     <div class="summary-wrap">
       <div class="summary-header">
-        <div class="summary-year">2025</div>
+        <div class="summary-year" data-recap-year>2026</div>
         <div class="summary-tagline">A Year of Relentless Progress</div>
       </div>
       <div class="summary-grid">
@@ -3367,11 +3367,26 @@
       errorScreen.classList.remove('hidden');
     }
 
+    // Recap year: the current year, except in Jan–Feb when people are still looking back at last year.
+    const RECAP_YEAR = (() => {
+      const now = new Date();
+      return now.getMonth() < 2 ? now.getFullYear() - 1 : now.getFullYear();
+    })();
+
+    // Days of the recap year that have actually happened, so averages aren't diluted by future days.
+    function daysElapsedInRecapYear() {
+      const start = new Date(RECAP_YEAR, 0, 1);
+      const end = new Date(Math.min(Date.now(), new Date(RECAP_YEAR + 1, 0, 1).getTime()));
+      return Math.max(1, Math.ceil((end - start) / 86400000));
+    }
+
+    document.querySelectorAll('[data-recap-year]').forEach(el => { el.textContent = RECAP_YEAR; });
+
     async function fetchAllActivities(accessToken) {
       showLoading('Fetching your activities...');
       debugLog('fetchAllActivities started');
 
-      const year = 2025;
+      const year = RECAP_YEAR;
       const startOfYear = new Date(year, 0, 1).getTime() / 1000;
       const endOfYear = new Date(year, 11, 31, 23, 59, 59).getTime() / 1000;
 
@@ -3656,7 +3671,7 @@
 
       // Best week
       stats.bestWeekDistance = Math.max(...stats.weeklyDistance);
-      stats.avgWeeklyDistance = stats.totalDistance / 52;
+      stats.avgWeeklyDistance = stats.totalDistance / (daysElapsedInRecapYear() / 7);
 
       // Streak
       stats.longestStreak = calculateLongestStreak(stats.activeDays);
@@ -3677,9 +3692,9 @@
       stats.formatted = {
         avgTimePerActivity: formatDuration(stats.totalTime / stats.totalActivities),
         longestTime: formatDuration(stats.longestActivityTime),
-        dailyAvgCalories: Math.round(stats.totalCalories / 365),
+        dailyAvgCalories: Math.round(stats.totalCalories / daysElapsedInRecapYear()),
         maxCalories: Math.round(stats.maxCalories).toLocaleString(),
-        activePercent: Math.round((stats.activeDays.size / 365) * 100) + '%',
+        activePercent: Math.round((stats.activeDays.size / daysElapsedInRecapYear()) * 100) + '%',
         morningPercent: Math.round((stats.startTimes.slice(5, 9).reduce((a, b) => a + b, 0) / stats.totalActivities) * 100) + '%',
         earliestStart: getEarliestStart(stats.startTimes),
         latestStart: getLatestStart(stats.startTimes)
@@ -4061,8 +4076,8 @@
       const calsTag = `That's <em>${pizzas.toLocaleString()} slices of pizza</em> worth of energy.`;
 
       // Activities
-      const avgPerWeek = (stats.totalActivities / 52).toFixed(1);
-      const restDays = 365 - stats.activeDays.size;
+      const avgPerWeek = (stats.totalActivities / (daysElapsedInRecapYear() / 7)).toFixed(1);
+      const restDays = daysElapsedInRecapYear() - stats.activeDays.size;
       const activitiesTag = `That's <em>${avgPerWeek} activities per week</em>. ${restDays} rest days.`;
 
       // Streak
