@@ -30,6 +30,9 @@
       --violet: #A04E28;
       --rose: #FF7A45;
       --strava-orange: #FC4C02;
+      /* Display face for big numbers and headlines; body copy stays DM Sans */
+      --font-display: 'DM Sans';
+      --display-tracking: -0.05em;
     }
 
     * {
@@ -2215,11 +2218,17 @@
     .stat-huge, .stat-unit, .intro-year, .mini-card-value, .activity-count,
     .record-value, .detail-value, .segment-rank, .pr-time { transform: none; }
 
+    .stat-huge, .stat-unit, .intro-year, .intro-wrapped, .mini-card-value, .activity-count,
+    .record-value, .detail-value, .segment-rank, .pr-time, .card-month .stat-huge,
+    .login-logo, .onboarding-title, .error-title {
+      font-family: var(--font-display), 'DM Sans', system-ui, sans-serif;
+    }
+
     .stat-huge {
       font-weight: 700;
       font-size: clamp(4.5rem, 22vw, 14rem);
       line-height: 0.9;
-      letter-spacing: -0.05em;
+      letter-spacing: var(--display-tracking);
       font-variant-numeric: tabular-nums;
     }
 
@@ -2235,7 +2244,7 @@
       background: none;
       -webkit-text-fill-color: currentColor;
       color: var(--cream);
-      letter-spacing: -0.06em;
+      letter-spacing: calc(var(--display-tracking) - 0.01em);
       font-size: clamp(6rem, 32vw, 16rem);
     }
 
@@ -2941,7 +2950,7 @@
         <div class="stat-content">
           <div class="label">Best Month</div>
           <div class="stat-huge"
-            style="font-family: 'DM Sans', system-ui, sans-serif; font-weight: 700; letter-spacing: -0.04em; transform: none; line-height: 1.2; padding: 0.2em 0.5em; overflow: visible; width: 100vw; max-width: none; margin-left: -24px; margin-right: -24px;">
+            style="font-family: var(--font-display), 'DM Sans', sans-serif; font-weight: 700; letter-spacing: var(--display-tracking); transform: none; line-height: 1.2; padding: 0.2em 0.5em; overflow: visible; width: 100vw; max-width: none; margin-left: -24px; margin-right: -24px;">
             Month</div>
           <div class="context">You were <em>on fire</em>.</div>
           <div class="mini-cards-row">
@@ -4405,19 +4414,20 @@
       if (!canvas) return;
       try {
         await Promise.all([
-          document.fonts.load('700 200px "DM Sans"'),
+          document.fonts.load(`700 200px ${getComputedStyle(document.documentElement).getPropertyValue('--font-display').trim() || '"DM Sans"'}`),
           document.fonts.load('400 30px "DM Mono"')
         ]);
       } catch (e) { /* fall back to system fonts */ }
 
       const { W, H, PAD } = POSTER, C = POSTER_COLORS;
+      const DISPLAY = getComputedStyle(document.documentElement).getPropertyValue('--font-display').trim() || '"DM Sans"';
       const ctx = canvas.getContext('2d');
       ctx.fillStyle = C.paper;
       ctx.fillRect(0, 0, W, H);
 
       // Header
       ctx.fillStyle = C.ink;
-      ctx.font = '700 200px "DM Sans", system-ui, sans-serif';
+      ctx.font = `700 200px ${DISPLAY}, system-ui, sans-serif`;
       ctx.textBaseline = 'alphabetic';
       ctx.textAlign = 'left';
       ctx.fillText(String(RECAP_YEAR), PAD - 8, 250);
@@ -4448,7 +4458,7 @@
         // No GPS routes (indoor / strength only): lead with total distance instead.
         ctx.fillStyle = C.ink;
         ctx.textAlign = 'center';
-        ctx.font = '700 220px "DM Sans", system-ui, sans-serif';
+        ctx.font = `700 220px ${DISPLAY}, system-ui, sans-serif`;
         ctx.fillText(Math.round(getDistanceValue(stats.totalDistance)).toLocaleString(), W / 2, gridTop + gridH / 2);
         ctx.fillStyle = C.muted;
         ctx.font = '500 44px "DM Sans", system-ui, sans-serif';
@@ -4468,7 +4478,7 @@
       footer.forEach(([v, u], i) => {
         const x = PAD + i * colW;
         ctx.fillStyle = C.ink;
-        ctx.font = '700 64px "DM Sans", system-ui, sans-serif';
+        ctx.font = `700 64px ${DISPLAY}, system-ui, sans-serif`;
         ctx.fillText(v, x, 1714);
         ctx.fillStyle = C.muted;
         ctx.font = '500 30px "DM Sans", system-ui, sans-serif';
