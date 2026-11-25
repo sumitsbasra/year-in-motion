@@ -9,7 +9,7 @@
     href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔄</text></svg>">
 
   <link
-    href="https://fonts.googleapis.com/css2?family=Teko:wght@400;500;600;700&family=Outfit:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Teko:wght@400;500;600;700&family=Outfit:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap"
     rel="stylesheet">
   <style>
     :root {
@@ -2050,6 +2050,55 @@
       height: 100%;
     }
 
+    .poster-wrap {
+      position: relative;
+      z-index: 150;
+      height: 100vh;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      padding: calc(64px + env(safe-area-inset-top, 0px)) 24px calc(24px + env(safe-area-inset-bottom, 0px));
+      box-sizing: border-box;
+    }
+
+    .poster-canvas {
+      height: min(calc(100dvh - 190px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)), calc((100vw - 48px) * 16 / 9));
+      aspect-ratio: 9 / 16;
+      width: auto;
+      border-radius: 24px;
+      background: #EDE8E0;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .poster-actions {
+      display: flex;
+      gap: 10px;
+      width: min(342px, 100%);
+    }
+
+    .poster-btn {
+      flex: 1;
+      min-height: 52px;
+      border: 0;
+      border-radius: 16px;
+      font: 600 16px 'DM Sans', sans-serif;
+      background: #1E1E1E;
+      color: #E8E4DF;
+      cursor: pointer;
+    }
+
+    .poster-btn[hidden] {
+      display: none;
+    }
+
+    .poster-btn.primary {
+      background: #FF4500;
+      color: #140600;
+    }
+
     .summary-header {
       text-align: center;
       margin-bottom: 40px;
@@ -2799,52 +2848,16 @@
     </div>
   </div>
 
-  <!-- 14: Summary -->
+  <!-- 14: Share poster -->
   <div class="story-card card-summary" data-index="13">
-    <div class="noise"></div>
-    <div class="summary-wrap">
-      <div class="summary-header">
-        <div class="summary-year" data-recap-year>2026</div>
-        <div class="summary-tagline">A Year of Relentless Progress</div>
-      </div>
-      <div class="summary-grid">
-        <div class="summary-stat wide">
-          <div class="summary-num">0 mi</div>
-          <div class="summary-lbl">Total Distance</div>
-        </div>
-        <div class="summary-stat">
-          <div class="summary-num">0</div>
-          <div class="summary-lbl">Activities</div>
-        </div>
-        <div class="summary-stat">
-          <div class="summary-num">0 hrs</div>
-          <div class="summary-lbl">Time</div>
-        </div>
-        <div class="summary-stat">
-          <div class="summary-num">0 ft</div>
-          <div class="summary-lbl">Elevation</div>
-        </div>
-        <div class="summary-stat">
-          <div class="summary-num">0</div>
-          <div class="summary-lbl">Calories</div>
-        </div>
-        <div class="summary-stat">
-          <div class="summary-num">0</div>
-          <div class="summary-lbl">PRs</div>
-        </div>
-        <div class="summary-stat">
-          <div class="summary-num">0</div>
-          <div class="summary-lbl">Day Streak</div>
-        </div>
-      </div>
-      <div class="summary-logo">
-        <svg width="113" height="133" viewBox="0 0 113 133" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M112.5 38.9707L0 77.9414V0L112.5 38.9707Z" fill="white"/>
-          <path d="M112.5 132.941L0 93.9707L112.5 55V132.941ZM10 93.9707L108.25 127.746V60.1953L10 93.9707Z" fill="white"/>
-        </svg>
+    <div class="poster-wrap">
+      <canvas id="posterCanvas" class="poster-canvas" width="1080" height="1920" role="img"
+        aria-label="Share poster of your year in route shapes"></canvas>
+      <div class="poster-actions">
+        <button type="button" id="posterSave" class="poster-btn primary">Save image</button>
+        <button type="button" id="posterShare" class="poster-btn" hidden>Share</button>
       </div>
     </div>
-
   </div>
   </div> <!-- end wrapped-content -->
 
@@ -4177,19 +4190,241 @@
       }).join('');
     }
 
-    function updateSummary(stats) {
-      const summaryValues = document.querySelectorAll('.summary-num');
-      const distUnit = getDistanceUnit();
-      const elevUnit = getElevationUnit();
-      if (summaryValues.length >= 7) {
-        summaryValues[0].textContent = `${Math.round(getDistanceValue(stats.totalDistance)).toLocaleString()} ${distUnit}`;
-        summaryValues[1].textContent = stats.totalActivities;
-        summaryValues[2].textContent = `${stats.totalTimeHours} hrs`;
-        summaryValues[3].textContent = `${Math.round(getElevationValue(stats.totalElevation)).toLocaleString()} ${elevUnit}`;
-        summaryValues[4].textContent = `${stats.totalCaloriesK}k`;
-        summaryValues[5].textContent = stats.prs;
-        summaryValues[6].textContent = stats.longestStreak;
+    // ============================================
+    // SHARE POSTER: the year as route shapes
+    // ============================================
+
+    const POSTER = { W: 1080, H: 1920, PAD: 72, MAX_ROUTES: 48, TRIM_M: 200, MIN_ROUTE_M: 1000 };
+    const POSTER_COLORS = { paper: '#EDE8E0', ink: '#141414', muted: '#5C5750', rule: '#CFC8BD', accent: '#FF4500', accentText: '#C23500' };
+
+    // Google encoded polyline -> [[lat, lng], ...]
+    function decodePolyline(str) {
+      const points = [];
+      let index = 0, lat = 0, lng = 0;
+      while (index < str.length) {
+        let result = 0, shift = 0, b;
+        do { b = str.charCodeAt(index++) - 63; result |= (b & 0x1f) << shift; shift += 5; } while (b >= 0x20);
+        lat += (result & 1) ? ~(result >> 1) : (result >> 1);
+        result = 0; shift = 0;
+        do { b = str.charCodeAt(index++) - 63; result |= (b & 0x1f) << shift; shift += 5; } while (b >= 0x20);
+        lng += (result & 1) ? ~(result >> 1) : (result >> 1);
+        points.push([lat / 1e5, lng / 1e5]);
       }
+      return points;
+    }
+
+    function haversineMeters(a, b) {
+      const R = 6371000, toRad = Math.PI / 180;
+      const dLat = (b[0] - a[0]) * toRad, dLng = (b[1] - a[1]) * toRad;
+      const h = Math.sin(dLat / 2) ** 2 + Math.cos(a[0] * toRad) * Math.cos(b[0] * toRad) * Math.sin(dLng / 2) ** 2;
+      return 2 * R * Math.asin(Math.sqrt(h));
+    }
+
+    // Privacy: drop the first and last TRIM_M metres of a route so the poster never shows
+    // where an activity started or finished (usually home). Cut points are interpolated.
+    function trimRouteEnds(points, trimM) {
+      if (points.length < 2) return null;
+      const cum = [0];
+      for (let i = 1; i < points.length; i++) cum.push(cum[i - 1] + haversineMeters(points[i - 1], points[i]));
+      const total = cum[cum.length - 1];
+      if (total < POSTER.MIN_ROUTE_M) return null;
+      const at = (d) => {
+        let i = 1;
+        while (i < cum.length - 1 && cum[i] < d) i++;
+        const seg = cum[i] - cum[i - 1] || 1, t = (d - cum[i - 1]) / seg;
+        return [points[i - 1][0] + (points[i][0] - points[i - 1][0]) * t, points[i - 1][1] + (points[i][1] - points[i - 1][1]) * t];
+      };
+      const startD = trimM, endD = total - trimM;
+      const out = [at(startD)];
+      for (let i = 0; i < points.length; i++) if (cum[i] > startD && cum[i] < endD) out.push(points[i]);
+      out.push(at(endD));
+      return out;
+    }
+
+    // Pick up to MAX_ROUTES routes spread evenly through the year, always including the longest.
+    function selectPosterRoutes(activities) {
+      const routes = activities
+        .filter(a => a.map && a.map.summary_polyline)
+        .map(a => ({ id: a.id, date: new Date(a.start_date), distance: a.distance || 0, pts: trimRouteEnds(decodePolyline(a.map.summary_polyline), POSTER.TRIM_M) }))
+        .filter(r => r.pts && r.pts.length >= 2)
+        .sort((a, b) => a.date - b.date);
+      if (!routes.length) return { routes: [], longestId: null };
+      const longest = routes.reduce((m, r) => (r.distance > m.distance ? r : m), routes[0]);
+      let picked = routes;
+      if (routes.length > POSTER.MAX_ROUTES) {
+        const step = routes.length / POSTER.MAX_ROUTES;
+        picked = Array.from({ length: POSTER.MAX_ROUTES }, (_, i) => routes[Math.floor(i * step)]);
+        if (!picked.includes(longest)) {
+          // Swap the longest in for its nearest neighbour in time, keeping chronological order.
+          let near = 0;
+          picked.forEach((r, i) => { if (Math.abs(r.date - longest.date) < Math.abs(picked[near].date - longest.date)) near = i; });
+          picked[near] = longest;
+        }
+      }
+      return { routes: picked, longestId: longest.id };
+    }
+
+    function posterColumns(n) {
+      if (n <= 4) return 2;
+      if (n <= 9) return 3;
+      if (n <= 16) return 4;
+      if (n <= 30) return 5;
+      return 6;
+    }
+
+    function drawRouteShape(ctx, pts, cx, cy, box) {
+      const lat0 = pts.reduce((s, p) => s + p[0], 0) / pts.length;
+      const k = Math.cos(lat0 * Math.PI / 180);
+      const xy = pts.map(p => [p[1] * k, -p[0]]);
+      const xs = xy.map(p => p[0]), ys = xy.map(p => p[1]);
+      const minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys);
+      const scale = box / Math.max(maxX - minX, maxY - minY, 1e-9);
+      const ox = cx - ((minX + maxX) / 2) * scale, oy = cy - ((minY + maxY) / 2) * scale;
+      ctx.beginPath();
+      xy.forEach((p, i) => { const x = p[0] * scale + ox, y = p[1] * scale + oy; i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); });
+      ctx.stroke();
+    }
+
+    function posterDateRange() {
+      const yearOver = Date.now() >= new Date(RECAP_YEAR + 1, 0, 1).getTime();
+      if (yearOver) return 'FULL YEAR';
+      const today = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase();
+      return `JAN 1 – ${today}`;
+    }
+
+    async function renderPoster(stats) {
+      const canvas = document.getElementById('posterCanvas');
+      if (!canvas) return;
+      try {
+        await Promise.all([
+          document.fonts.load('700 200px "DM Sans"'),
+          document.fonts.load('400 30px "DM Mono"')
+        ]);
+      } catch (e) { /* fall back to system fonts */ }
+
+      const { W, H, PAD } = POSTER, C = POSTER_COLORS;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = C.paper;
+      ctx.fillRect(0, 0, W, H);
+
+      // Header
+      ctx.fillStyle = C.ink;
+      ctx.font = '700 200px "DM Sans", system-ui, sans-serif';
+      ctx.textBaseline = 'alphabetic';
+      ctx.textAlign = 'left';
+      ctx.fillText(String(RECAP_YEAR), PAD - 8, 250);
+      ctx.fillStyle = C.muted;
+      ctx.font = '400 30px "DM Mono", ui-monospace, monospace';
+      ctx.textAlign = 'right';
+      ctx.fillText(`${stats.totalActivities} ACTIVITIES`, W - PAD, 196);
+      ctx.fillText(posterDateRange(), W - PAD, 240);
+
+      // Route grid
+      const { routes, longestId } = selectPosterRoutes(activitiesData);
+      const gridTop = 330, gridBottom = 1570, gridW = W - PAD * 2, gridH = gridBottom - gridTop;
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+      if (routes.length) {
+        const cols = posterColumns(routes.length), rows = Math.ceil(routes.length / cols);
+        const cell = Math.min(gridW / cols, gridH / rows);
+        const x0 = PAD + (gridW - cell * cols) / 2, y0 = gridTop + (gridH - cell * rows) / 2;
+        const lw = Math.max(3, cell / 30);
+        routes.forEach((r, i) => {
+          const cx = x0 + (i % cols + 0.5) * cell, cy = y0 + (Math.floor(i / cols) + 0.5) * cell;
+          const isLongest = r.id === longestId;
+          ctx.strokeStyle = isLongest ? C.accent : C.ink;
+          ctx.lineWidth = isLongest ? lw * 1.6 : lw;
+          drawRouteShape(ctx, r.pts, cx, cy, cell * 0.8);
+        });
+      } else {
+        // No GPS routes (indoor / strength only): lead with total distance instead.
+        ctx.fillStyle = C.ink;
+        ctx.textAlign = 'center';
+        ctx.font = '700 220px "DM Sans", system-ui, sans-serif';
+        ctx.fillText(Math.round(getDistanceValue(stats.totalDistance)).toLocaleString(), W / 2, gridTop + gridH / 2);
+        ctx.fillStyle = C.muted;
+        ctx.font = '500 44px "DM Sans", system-ui, sans-serif';
+        ctx.fillText(getDistanceUnit() === 'mi' ? 'miles' : 'kilometres', W / 2, gridTop + gridH / 2 + 80);
+      }
+
+      // Footer stats
+      ctx.fillStyle = C.rule;
+      ctx.fillRect(PAD, 1620, W - PAD * 2, 2);
+      const footer = [
+        [Math.round(getDistanceValue(stats.totalDistance)).toLocaleString(), getDistanceUnit() === 'mi' ? 'miles' : 'km'],
+        [stats.totalTimeHours.toLocaleString(), 'hours'],
+        [Math.round(getElevationValue(stats.totalElevation)).toLocaleString(), `${getElevationUnit()} climbed`]
+      ];
+      const colW = (W - PAD * 2) / 3;
+      ctx.textAlign = 'left';
+      footer.forEach(([v, u], i) => {
+        const x = PAD + i * colW;
+        ctx.fillStyle = C.ink;
+        ctx.font = '700 64px "DM Sans", system-ui, sans-serif';
+        ctx.fillText(v, x, 1714);
+        ctx.fillStyle = C.muted;
+        ctx.font = '500 30px "DM Sans", system-ui, sans-serif';
+        ctx.fillText(u, x, 1758);
+      });
+
+      ctx.font = '400 26px "DM Mono", ui-monospace, monospace';
+      if (routes.length) {
+        const longest = routes.find(r => r.id === longestId);
+        ctx.fillStyle = C.accentText;
+        ctx.fillRect(PAD, 1838, 20, 20);
+        ctx.fillStyle = C.muted;
+        ctx.fillText(`LONGEST · ${getDistanceValue(longest.distance).toFixed(1)} ${getDistanceUnit().toUpperCase()}`, PAD + 34, 1858);
+      }
+      ctx.textAlign = 'right';
+      ctx.fillStyle = C.muted;
+      ctx.fillText('RECAP.FIT', W - PAD, 1858);
+
+      canvas.setAttribute('aria-label', `${RECAP_YEAR} share poster: ${routes.length} route shapes, ` +
+        `${footer[0][0]} ${footer[0][1]}, ${footer[1][0]} hours, ${footer[2][0]} ${footer[2][1]}`);
+      setupPosterActions(canvas);
+    }
+
+    function posterBlob(canvas) {
+      return new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+    }
+
+    function setupPosterActions(canvas) {
+      const saveBtn = document.getElementById('posterSave');
+      const shareBtn = document.getElementById('posterShare');
+      const filename = `recap-${RECAP_YEAR}.png`;
+      [saveBtn, shareBtn].forEach(btn => btn.addEventListener('click', e => e.stopPropagation()));
+
+      saveBtn.onclick = async (e) => {
+        e.stopPropagation();
+        const blob = await posterBlob(canvas);
+        if (!blob) return;
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      };
+
+      // Only offer Share where the browser can share image files (mobile Safari/Chrome).
+      const probe = new File([new Blob()], filename, { type: 'image/png' });
+      if (navigator.canShare && navigator.canShare({ files: [probe] })) {
+        shareBtn.hidden = false;
+        shareBtn.onclick = async (e) => {
+          e.stopPropagation();
+          const blob = await posterBlob(canvas);
+          if (!blob) return;
+          try {
+            await navigator.share({ files: [new File([blob], filename, { type: 'image/png' })], title: `My ${RECAP_YEAR} in motion` });
+          } catch (err) { /* user cancelled */ }
+        };
+      }
+    }
+
+    function updateSummary(stats) {
+      renderPoster(stats);
     }
 
     function createHeatmap(data) {
