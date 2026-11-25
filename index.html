@@ -9,20 +9,26 @@
     href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔄</text></svg>">
 
   <link
-    href="https://fonts.googleapis.com/css2?family=Teko:wght@400;500;600;700&family=Outfit:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap"
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap"
     rel="stylesheet">
   <style>
     :root {
-      --orange-hot: #FF4D00;
-      --coral: #FF7F6B;
-      --peach: #FFB199;
-      --cream: #FFF8F0;
-      --night: #0A0A0A;
-      --gold: #FFD700;
-      --electric-blue: #00D4FF;
-      --mint: #00FFB2;
-      --violet: #8B5CF6;
-      --rose: #FF3366;
+      /* Ember palette (2026) */
+      --night: #0F0E0D;
+      --surface: #171513;
+      --surface-2: #211E1B;
+      --border: #26221F;
+      --cream: #F4EFEA;
+      --dim: #A8A098;
+      --orange-hot: #FF7A45;
+      --ember-text: #FF9A6B;
+      --peach: #FFB27A;
+      --coral: #FF9A6B;
+      --gold: #FFB27A;
+      --electric-blue: #E2662F;
+      --mint: #FF9A6B;
+      --violet: #A04E28;
+      --rose: #FF7A45;
       --strava-orange: #FC4C02;
     }
 
@@ -33,7 +39,7 @@
     }
 
     body {
-      font-family: 'Outfit', sans-serif;
+      font-family: 'DM Sans', system-ui, sans-serif;
       background: var(--night);
       color: var(--cream);
       overflow: hidden;
@@ -77,7 +83,7 @@
     }
 
     .login-logo {
-      font-family: 'Teko', sans-serif;
+      font-family: 'DM Sans', system-ui, sans-serif;
       font-size: clamp(3rem, 12vw, 6rem);
       font-weight: 700;
       transform: skewX(-6deg);
@@ -89,7 +95,7 @@
     }
 
     .login-subtitle {
-      font-family: 'Instrument Serif', serif;
+      font-family: 'DM Sans', system-ui, sans-serif;
       font-size: clamp(1.2rem, 4vw, 1.8rem);
       font-style: italic;
       opacity: 0.7;
@@ -114,7 +120,7 @@
       color: white;
       border: none;
       border-radius: 100px;
-      font-family: 'Outfit', sans-serif;
+      font-family: 'DM Sans', system-ui, sans-serif;
       font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
@@ -200,8 +206,8 @@
       content: '';
       position: absolute;
       inset: 0;
-      background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(255, 77, 0, 0.15) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 40% at 80% 100%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+      background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(255, 122, 69, 0.15) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 100%, rgba(160, 78, 40, 0.1) 0%, transparent 50%);
     }
 
     .onboarding-progress {
@@ -284,7 +290,7 @@
     }
 
     .onboarding-title {
-      font-family: 'Teko', sans-serif;
+      font-family: 'DM Sans', system-ui, sans-serif;
       font-size: clamp(2.5rem, 10vw, 3.5rem);
       font-weight: 700;
       line-height: 0.95;
@@ -297,7 +303,7 @@
     }
 
     .onboarding-subtitle {
-      font-family: 'Instrument Serif', serif;
+      font-family: 'DM Sans', system-ui, sans-serif;
       font-size: 1.2rem;
       font-style: italic;
       opacity: 0.7;
@@ -314,8 +320,8 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: rgba(0, 255, 178, 0.08);
-      border: 1px solid rgba(0, 255, 178, 0.2);
+      background: rgba(255, 154, 107, 0.08);
+      border: 1px solid rgba(255, 154, 107, 0.2);
       color: var(--mint);
       padding: 6px 10px;
       border-radius: 50px;
@@ -339,7 +345,7 @@
       padding: 16px 32px;
       border: none;
       border-radius: 100px;
-      font-family: 'Outfit', sans-serif;
+      font-family: 'DM Sans', system-ui, sans-serif;
       font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
@@ -374,7 +380,7 @@
       border: none;
       color: var(--cream);
       opacity: 0.6;
-      font-family: 'Outfit', sans-serif;
+      font-family: 'DM Sans', system-ui, sans-serif;
       font-size: 0.9rem;
       cursor: pointer;
       padding: 8px 0;
@@ -539,7 +545,7 @@
       background: rgba(255, 255, 255, 0.06);
       border: 1px solid rgba(255, 255, 255, 0.12);
       border-radius: 12px;
-      font-family: 'Outfit', sans-serif;
+      font-family: 'DM Sans', system-ui, sans-serif;
       font-size: 1rem;
       color: var(--cream);
       transition: all 0.3s ease;
@@ -552,7 +558,7 @@
     }
 
     .input-group input::placeholder {
-      color: rgba(255, 248, 240, 0.3);
+      color: rgba(244, 239, 234, 0.3);
     }
 
     .input-hint {
@@ -618,17 +624,17 @@
       padding: 8px 20px;
       border: none;
       border-radius: 100px;
-      font-family: 'Outfit', sans-serif;
+      font-family: 'DM Sans', system-ui, sans-serif;
       font-size: 0.9rem;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s ease;
       background: transparent;
-      color: rgba(255, 248, 240, 0.5);
+      color: rgba(244, 239, 234, 0.5);
     }
 
     .unit-option:hover:not(.active) {
-      color: rgba(255, 248, 240, 0.8);
+      color: rgba(244, 239, 234, 0.8);
     }
 
     .unit-option.active {
@@ -731,7 +737,7 @@
     }
 
     .settings-header h2 {
-      font-family: 'Teko', sans-serif;
+      font-family: 'DM Sans', system-ui, sans-serif;
       font-size: 1.5rem;
       font-weight: 600;
     }
@@ -800,7 +806,7 @@
       background: rgba(255, 255, 255, 0.06);
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 10px;
-      font-family: 'Outfit', sans-serif;
+      font-family: 'DM Sans', system-ui, sans-serif;
       font-size: 0.9rem;
       color: var(--cream);
       cursor: pointer;
@@ -813,11 +819,11 @@
 
     .settings-action-btn.danger {
       color: var(--rose);
-      border-color: rgba(255, 51, 102, 0.2);
+      border-color: rgba(255, 122, 69, 0.2);
     }
 
     .settings-action-btn.danger:hover {
-      background: rgba(255, 51, 102, 0.1);
+      background: rgba(255, 122, 69, 0.1);
     }
 
     /* Credential Error Screen */
@@ -1005,7 +1011,7 @@
     }
 
     .error-title {
-      font-family: 'Teko', sans-serif;
+      font-family: 'DM Sans', system-ui, sans-serif;
       font-size: clamp(3rem, 10vw, 5rem);
       font-weight: 700;
       line-height: 0.9;
@@ -1029,7 +1035,7 @@
       font-size: 0.9rem;
       opacity: 0.5;
       font-style: italic;
-      font-family: 'Instrument Serif', serif;
+      font-family: 'DM Sans', system-ui, sans-serif;
     }
 
     /* Wrapped content wrapper */
@@ -1049,7 +1055,7 @@
       right: calc(-1 * env(safe-area-inset-right, 0));
       bottom: calc(-1 * env(safe-area-inset-bottom, 0));
       z-index: 0;
-      background: var(--base-color, #0a0a0a);
+      background: var(--base-color, #0F0E0D);
       overflow: hidden;
       transition: background 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     }
@@ -1238,7 +1244,7 @@
     }
 
     .mini-card-value {
-      font-family: 'Teko', sans-serif;
+      font-family: 'DM Sans', system-ui, sans-serif;
       font-size: 1.4rem;
       font-weight: 600;
       line-height: 1;
@@ -1354,7 +1360,7 @@
     }
 
     .stat-huge {
-      font-family: 'Teko', sans-serif;
+      font-family: 'DM Sans', system-ui, sans-serif;
       font-size: clamp(5rem, 24vw, 18rem);
       font-weight: 700;
       line-height: 0.85;
@@ -1363,7 +1369,7 @@
     }
 
     .stat-unit {
-      font-family: 'Teko', sans-serif;
+      font-family: 'DM Sans', system-ui, sans-serif;
       font-size: clamp(1.5rem, 5vw, 3.5rem);
       font-weight: 500;
       opacity: 0.7;
@@ -1384,7 +1390,7 @@
     }
 
     .context em {
-      font-family: 'Instrument Serif', serif;
+      font-family: 'DM Sans', system-ui, sans-serif;
       font-style: italic;
       color: var(--peach);
     }
@@ -1397,9 +1403,9 @@
     .intro-bg {
       position: absolute;
       inset: 0;
-      background: radial-gradient(ellipse 80% 50% at 50% 50%, rgba(255, 77, 0, 0.15) 0%, transparent 50%),
-        radial-gradient(ellipse 60% 80% at 30% 70%, rgba(139, 92, 246, 0.12) 0%, transparent 50%),
-        radial-gradient(ellipse 70% 60% at 70% 30%, rgba(255, 51, 102, 0.1) 0%, transparent 50%);
+      background: radial-gradient(ellipse 80% 50% at 50% 50%, rgba(255, 122, 69, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse 60% 80% at 30% 70%, rgba(160, 78, 40, 0.12) 0%, transparent 50%),
+        radial-gradient(ellipse 70% 60% at 70% 30%, rgba(255, 122, 69, 0.1) 0%, transparent 50%);
       animation: introBreath 8s ease-in-out infinite;
     }
 
@@ -1432,7 +1438,7 @@
     }
 
     .intro-year {
-      font-family: 'Teko', sans-serif;
+      font-family: 'DM Sans', system-ui, sans-serif;
       font-size: clamp(6rem, 28vw, 18rem);
       font-weight: 700;
       line-height: 0.85;
@@ -1445,7 +1451,7 @@
     }
 
     .intro-wrapped {
-      font-family: 'Instrument Serif', serif;
+      font-family: 'DM Sans', system-ui, sans-serif;
       font-size: clamp(2rem, 9vw, 6rem);
       font-style: italic;
       margin-top: -5px;
@@ -1516,7 +1522,7 @@
       left: 0;
       right: 0;
       height: 35%;
-      background: linear-gradient(180deg, transparent 0%, rgba(0, 255, 178, 0.08) 100%);
+      background: linear-gradient(180deg, transparent 0%, rgba(255, 154, 107, 0.08) 100%);
       clip-path: polygon(0% 100%, 5% 85%, 12% 90%, 20% 65%, 28% 80%, 38% 45%, 45% 60%, 55% 25%, 65% 50%, 72% 35%, 80% 55%, 88% 40%, 95% 70%, 100% 55%, 100% 100%);
     }
 
@@ -1596,7 +1602,7 @@
     }
 
     .activity-count {
-      font-family: 'Teko', sans-serif;
+      font-family: 'DM Sans', system-ui, sans-serif;
       font-size: 1.6rem;
       font-weight: 600;
       transform: skewX(-6deg);
@@ -1636,20 +1642,20 @@
     }
 
     .heatmap-cell.l1 {
-      background: rgba(255, 77, 0, 0.25);
+      background: rgba(255, 122, 69, 0.25);
     }
 
     .heatmap-cell.l2 {
-      background: rgba(255, 77, 0, 0.45);
+      background: rgba(255, 122, 69, 0.45);
     }
 
     .heatmap-cell.l3 {
-      background: rgba(255, 77, 0, 0.7);
+      background: rgba(255, 122, 69, 0.7);
     }
 
     .heatmap-cell.l4 {
       background: var(--orange-hot);
-      box-shadow: 0 0 6px rgba(255, 77, 0, 0.5);
+      box-shadow: 0 0 6px rgba(255, 122, 69, 0.5);
     }
 
     .comparison {
@@ -1758,7 +1764,7 @@
 
     .time-bar.peak {
       opacity: 1;
-      box-shadow: 0 0 16px rgba(255, 215, 0, 0.4);
+      box-shadow: 0 0 16px rgba(255, 178, 122, 0.4);
     }
 
     .time-labels {
@@ -1808,7 +1814,7 @@
     }
 
     .record-value {
-      font-family: 'Teko', sans-serif;
+      font-family: 'DM Sans', system-ui, sans-serif;
       font-size: 1.5rem;
       font-weight: 600;
       margin-top: 2px;
@@ -1851,7 +1857,7 @@
     .month-bar.best {
       background: linear-gradient(180deg, var(--gold) 0%, var(--orange-hot) 100%);
       opacity: 1;
-      box-shadow: 0 0 20px rgba(255, 77, 0, 0.4);
+      box-shadow: 0 0 20px rgba(255, 122, 69, 0.4);
     }
 
     .month-name {
@@ -1883,7 +1889,7 @@
     }
 
     .detail-value {
-      font-family: 'Teko', sans-serif;
+      font-family: 'DM Sans', system-ui, sans-serif;
       font-size: 2.2rem;
       font-weight: 600;
       transform: skewX(-6deg);
@@ -1933,12 +1939,12 @@
     }
 
     .segment-item.crown {
-      background: rgba(255, 215, 0, 0.1);
-      border-color: rgba(255, 215, 0, 0.2);
+      background: rgba(255, 178, 122, 0.1);
+      border-color: rgba(255, 178, 122, 0.2);
     }
 
     .segment-rank {
-      font-family: 'Teko', sans-serif;
+      font-family: 'DM Sans', system-ui, sans-serif;
       font-size: 1.4rem;
       font-weight: 600;
       opacity: 0.4;
@@ -1999,8 +2005,8 @@
     }
 
     .pr-item.featured {
-      background: rgba(139, 92, 246, 0.15);
-      border-color: rgba(139, 92, 246, 0.3);
+      background: rgba(160, 78, 40, 0.15);
+      border-color: rgba(160, 78, 40, 0.3);
       flex-basis: 100%;
     }
 
@@ -2013,7 +2019,7 @@
     }
 
     .pr-time {
-      font-family: 'Teko', sans-serif;
+      font-family: 'DM Sans', system-ui, sans-serif;
       font-size: 1.8rem;
       font-weight: 600;
       transform: skewX(-6deg);
@@ -2105,7 +2111,7 @@
     }
 
     .summary-year {
-      font-family: 'Teko', sans-serif;
+      font-family: 'DM Sans', system-ui, sans-serif;
       font-size: clamp(4rem, 16vw, 10rem);
       font-weight: 700;
       line-height: 0.9;
@@ -2114,7 +2120,7 @@
     }
 
     .summary-tagline {
-      font-family: 'Instrument Serif', serif;
+      font-family: 'DM Sans', system-ui, sans-serif;
       font-size: clamp(1.1rem, 3.5vw, 1.8rem);
       font-style: italic;
       opacity: 0.85;
@@ -2143,7 +2149,7 @@
     }
 
     .summary-num {
-      font-family: 'Teko', sans-serif;
+      font-family: 'DM Sans', system-ui, sans-serif;
       font-size: clamp(1.8rem, 6vw, 2.8rem);
       font-weight: 600;
       line-height: 1;
@@ -2191,6 +2197,116 @@
       .month-bar {
         width: 18px;
       }
+    }
+    /* ============================================
+       EMBER THEME (2026): flat warm black, one orange ramp,
+       DM Sans numbers, DM Mono labels. Overrides the 2025 styles above.
+       ============================================ */
+    body { background: var(--night); color: var(--cream); }
+    .noise, .intro-bg { display: none; }
+
+    .label, .intro-label, .tap-hint, .intro-name {
+      font-family: 'DM Mono', ui-monospace, monospace;
+      letter-spacing: 0.08em;
+      color: var(--dim);
+      opacity: 1;
+    }
+
+    .stat-huge, .stat-unit, .intro-year, .mini-card-value, .activity-count,
+    .record-value, .detail-value, .segment-rank, .pr-time { transform: none; }
+
+    .stat-huge {
+      font-weight: 700;
+      font-size: clamp(4.5rem, 22vw, 14rem);
+      line-height: 0.9;
+      letter-spacing: -0.05em;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stat-unit {
+      font-weight: 500;
+      font-size: clamp(1.25rem, 5vw, 2.5rem);
+      letter-spacing: -0.01em;
+      color: var(--dim);
+      opacity: 1;
+    }
+
+    .intro-year {
+      background: none;
+      -webkit-text-fill-color: currentColor;
+      color: var(--cream);
+      letter-spacing: -0.06em;
+      font-size: clamp(6rem, 32vw, 16rem);
+    }
+
+    .intro-wrapped {
+      font-style: normal;
+      font-weight: 500;
+      font-size: clamp(1.4rem, 6.5vw, 2.75rem);
+      letter-spacing: -0.02em;
+      margin-top: 12px;
+      opacity: 1;
+    }
+
+    .context { color: var(--cream); opacity: 1; line-height: 1.5; }
+    .context em, .highlight { font-family: inherit; font-style: normal; font-weight: 600; color: var(--ember-text); }
+
+    .mini-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 12px 10px;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+    .mini-card-icon { display: none; }
+    .mini-card-value { font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+    .mini-card-label {
+      font-family: 'DM Mono', ui-monospace, monospace;
+      font-size: 0.625rem;
+      letter-spacing: 0.04em;
+      color: var(--dim);
+      opacity: 1;
+    }
+
+    .heatmap-cell { background: var(--surface-2); }
+    .heatmap-cell.l1 { background: #5E3020; }
+    .heatmap-cell.l2 { background: #A04E28; }
+    .heatmap-cell.l3 { background: #E2662F; }
+    .heatmap-cell.l4 { background: #FFB27A; box-shadow: none; }
+
+    .progress-fill { background: var(--orange-hot); }
+
+    .mini-card-label { white-space: normal; line-height: 1.25; overflow: visible; }
+
+    .heatmap-container { width: 100%; }
+    .card-streak .stat-content { width: min(360px, calc(100vw - 48px)); }
+    .heatmap { display: flex; flex-direction: column; gap: 3px; width: min(100%, 360px); margin: 0 auto; }
+    .hm-row { display: flex; align-items: center; gap: 8px; }
+    .hm-label { width: 10px; font: 400 10px 'DM Mono', ui-monospace, monospace; color: var(--dim); text-align: left; }
+    .hm-days { flex: 1; display: grid; grid-template-columns: repeat(31, minmax(0, 1fr)); gap: 2px; }
+    .heatmap-cell.hm-none { background: transparent; }
+    .heatmap-cell.hm-future { background: transparent; box-shadow: inset 0 0 0 1px var(--border); }
+    .heatmap-cell.hm-today { box-shadow: 0 0 0 1.5px var(--night), 0 0 0 3px var(--orange-hot); }
+    .heatmap-cell:hover { transform: none; }
+    .hm-legend { display: flex; align-items: center; justify-content: flex-end; gap: 3px; margin-top: 8px; font-size: 11px; color: var(--dim); }
+    .hm-legend .heatmap-cell { width: 9px; height: 9px; display: inline-block; }
+
+    .login-subtitle, .onboarding-subtitle { font-style: normal; color: var(--dim); }
+    .login-logo, .onboarding-title, .onboarding-title span, .error-title, .settings-header h2 {
+      background: none;
+      -webkit-text-fill-color: currentColor;
+      color: var(--cream);
+      letter-spacing: -0.03em;
+      font-style: normal;
+      transform: none;
+    }
+
+    .kudos-heart {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--orange-hot);
     }
   </style>
 </head>
@@ -2475,10 +2591,10 @@
       <div class="intro-bg"></div>
       <div class="hero-section">
         <div class="intro-content">
-          <div class="intro-label">Your Year in Motion</div>
+          <div class="intro-label">recap.fit</div>
           <div class="intro-year" data-recap-year>2026</div>
-          <div class="intro-wrapped">Wrapped</div>
-          <div class="intro-name">Your Athletic Journey</div>
+          <div class="intro-wrapped">Your year in motion</div>
+          <div class="intro-name" id="introRange"></div>
         </div>
         <div class="tap-hint">Tap to begin</div>
       </div>
@@ -2825,7 +2941,7 @@
         <div class="stat-content">
           <div class="label">Best Month</div>
           <div class="stat-huge"
-            style="font-family: 'Instrument Serif', serif; font-style: italic; transform: none; line-height: 1.2; padding: 0.2em 0.5em; overflow: visible; width: 100vw; max-width: none; margin-left: -24px; margin-right: -24px;">
+            style="font-family: 'DM Sans', system-ui, sans-serif; font-weight: 700; letter-spacing: -0.04em; transform: none; line-height: 1.2; padding: 0.2em 0.5em; overflow: visible; width: 100vw; max-width: none; margin-left: -24px; margin-right: -24px;">
             Month</div>
           <div class="context">You were <em>on fire</em>.</div>
           <div class="mini-cards-row">
@@ -2868,23 +2984,11 @@
     let autoAdvanceTimer = null;
 
     // Gradient spotlight config for each card: [color1, x1, y1, color2, x2, y2, baseColor]
-    const gradientConfigs = [
-      ['#FF4D00', '50%', '30%', '#8B5CF6', '20%', '80%', '#1a0a10'],      // 0: intro
-      ['#00D4FF', '70%', '20%', '#00FFB2', '20%', '75%', '#051518'],      // 1: distance
-      ['#FF3366', '30%', '75%', '#FF4D00', '75%', '25%', '#180a10'],      // 2: time
-      ['#00FFB2', '25%', '25%', '#00D4FF', '75%', '80%', '#051510'],      // 3: elevation
-      ['#FF3366', '65%', '35%', '#8B5CF6', '25%', '70%', '#150810'],      // 4: heartrate
-      ['#FF4D00', '50%', '75%', '#FFD700', '50%', '20%', '#181005'],      // 5: calories
-      ['#00D4FF', '20%', '25%', '#8B5CF6', '80%', '75%', '#080a15'],      // 6: activities
-      ['#FF4D00', '75%', '30%', '#FF3366', '25%', '75%', '#180805'],      // 7: streak
-      // Pace card removed
-      ['#00FFB2', '65%', '35%', '#FFD700', '30%', '70%', '#081510'],      // 8: kudos
-      ['#FFD700', '35%', '70%', '#FF4D00', '70%', '25%', '#151005'],      // 9: routes
-      ['#FFD700', '55%', '25%', '#FF4D00', '40%', '80%', '#151008'],      // 10: morning
-      ['#FFD700', '70%', '30%', '#FF4D00', '25%', '70%', '#151008'],      // 11: records
-      ['#00D4FF', '35%', '70%', '#00FFB2', '65%', '25%', '#051515'],      // 12: month
-      ['#FF4D00', '45%', '35%', '#8B5CF6', '70%', '75%', '#150810'],      // 13: summary
-    ];
+    // Ember: a single faint warm glow that drifts position card to card (no per-card colour washes)
+    const GLOW_POSITIONS = [['50%', '18%'], ['80%', '12%'], ['20%', '20%'], ['70%', '85%'], ['30%', '15%'], ['60%', '88%'], ['15%', '30%'],
+      ['85%', '25%'], ['40%', '90%'], ['75%', '15%'], ['25%', '85%'], ['55%', '12%'], ['20%', '75%'], ['50%', '20%']];
+    const gradientConfigs = GLOW_POSITIONS.map(([x, y]) =>
+      ['rgba(255, 122, 69, 0.14)', x, y, 'rgba(160, 78, 40, 0.06)', `${100 - parseInt(x)}%`, `${100 - parseInt(y)}%`, '#0F0E0D']);
 
     function updateGradient(index) {
       const config = gradientConfigs[index];
@@ -2927,7 +3031,7 @@
       for (let i = 0; i < 15; i++) {
         const heart = document.createElement('div');
         heart.className = 'kudos-heart';
-        heart.textContent = '🧡';
+        heart.textContent = '';
         heart.style.left = Math.random() * 100 + '%';
         heart.style.animationDelay = Math.random() * 6 + 's';
         container.appendChild(heart);
@@ -2954,7 +3058,7 @@
           const eased = 1 - Math.pow(1 - progress, 3);
           let val = target * eased;
           if (target >= 1000) counter.textContent = Math.floor(val).toLocaleString();
-          else if (target < 10) counter.textContent = val.toFixed(1);
+          else if (target < 10 && !Number.isInteger(target)) counter.textContent = val.toFixed(1);
           else counter.textContent = Math.floor(val);
           if (progress < 1) requestAnimationFrame(update);
         }
@@ -3394,6 +3498,10 @@
     }
 
     document.querySelectorAll('[data-recap-year]').forEach(el => { el.textContent = RECAP_YEAR; });
+    document.addEventListener('DOMContentLoaded', () => {
+      const range = document.getElementById('introRange');
+      if (range) range.textContent = posterDateRange();
+    });
 
     async function fetchAllActivities(accessToken) {
       showLoading('Fetching your activities...');
@@ -3478,7 +3586,7 @@
 
         // Re-render charts with real data
         debugLog('Rendering charts...');
-        createHeatmap(stats.heatmapData);
+        createHeatmap();
         createTimeBars(stats.timeDistribution);
         createMonthBars(stats.monthlyDistance);
 
@@ -4427,22 +4535,47 @@
       renderPoster(stats);
     }
 
-    function createHeatmap(data) {
+    // Year grid: one row per month, one cell per day. Brightness = minutes moving that day.
+    // Days after today are outlined so the grid visibly fills in as the year goes.
+    function createHeatmap() {
       const container = document.getElementById('heatmap');
-      container.innerHTML = ''; // Clear demo data
-
-      // Data is 53 weeks x 7 days
-      for (let week = 0; week < 52; week++) {
-        for (let day = 0; day < 7; day++) {
+      container.innerHTML = '';
+      const minutes = {};
+      activitiesData.forEach(a => {
+        const d = new Date(a.start_date);
+        if (d.getFullYear() !== RECAP_YEAR) return;
+        const key = `${d.getMonth()}-${d.getDate()}`;
+        minutes[key] = (minutes[key] || 0) + (a.moving_time || 0) / 60;
+      });
+      const today = new Date();
+      const isCurrentYear = today.getFullYear() === RECAP_YEAR;
+      const labels = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
+      for (let m = 0; m < 12; m++) {
+        const row = document.createElement('div');
+        row.className = 'hm-row';
+        row.innerHTML = `<span class="hm-label">${labels[m]}</span>`;
+        const days = document.createElement('div');
+        days.className = 'hm-days';
+        const len = new Date(RECAP_YEAR, m + 1, 0).getDate();
+        for (let d = 1; d <= 31; d++) {
           const cell = document.createElement('div');
           cell.className = 'heatmap-cell';
-
-          const intensity = data && data[week] ? data[week][day] : 0;
-          if (intensity > 0) cell.classList.add(`l${Math.min(intensity, 4)}`);
-
-          container.appendChild(cell);
+          if (d > len) cell.classList.add('hm-none');
+          else if (isCurrentYear && new Date(RECAP_YEAR, m, d) > today) cell.classList.add('hm-future');
+          else {
+            const min = minutes[`${m}-${d}`] || 0;
+            if (min > 0) cell.classList.add(min < 30 ? 'l1' : min < 60 ? 'l2' : min < 90 ? 'l3' : 'l4');
+            if (isCurrentYear && m === today.getMonth() && d === today.getDate()) cell.classList.add('hm-today');
+          }
+          days.appendChild(cell);
         }
+        row.appendChild(days);
+        container.appendChild(row);
       }
+      const legend = document.createElement('div');
+      legend.className = 'hm-legend';
+      legend.innerHTML = '<span>Less</span><i class="heatmap-cell l1"></i><i class="heatmap-cell l2"></i><i class="heatmap-cell l3"></i><i class="heatmap-cell l4"></i><span>More</span>';
+      container.appendChild(legend);
     }
 
     function createTimeBars(data) {
