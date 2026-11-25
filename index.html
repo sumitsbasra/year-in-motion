@@ -3362,7 +3362,7 @@
     }
 
     function getStoredUnit() {
-      return localStorage.getItem('strava_units') || 'mi';
+      try { return localStorage.getItem('strava_units') || 'mi'; } catch (e) { return 'mi'; }
     }
 
     function initUnitToggle() {
@@ -4931,6 +4931,14 @@
 
     // Check for OAuth callback or existing session
     function checkAuth() {
+      if (DEMO) {
+        debugLog('Demo mode: loading sample year.');
+        activitiesData = generateDemoActivities();
+        const label = document.querySelector('.card-intro .intro-label');
+        if (label) label.textContent = 'recap.fit · sample data';
+        processAndDisplayData();
+        return;
+      }
       const urlParams = new URLSearchParams(window.location.search);
       const code = urlParams.get('code');
 
@@ -4964,6 +4972,89 @@
           }
         }
       }
+    }
+
+    // ============================================
+    // DEMO MODE (?demo): realistic sample year, no Strava needed.
+    // For portfolio visitors and design review. Routes are synthetic.
+    // ============================================
+
+    const DEMO = new URLSearchParams(window.location.search).has('demo') || window.RECAP_DEMO === true;
+
+    function encodePolyline(points) {
+      const enc = v => {
+        v = Math.round(v * 1e5);
+        v = v < 0 ? ~(v << 1) : v << 1;
+        let out = '';
+        while (v >= 0x20) { out += String.fromCharCode((0x20 | (v & 0x1f)) + 63); v >>= 5; }
+        return out + String.fromCharCode(v + 63);
+      };
+      let pLat = 0, pLng = 0, out = '';
+      points.forEach(([lat, lng]) => { out += enc(lat - pLat) + enc(lng - pLng); pLat = lat; pLng = lng; });
+      return out;
+    }
+
+    function generateDemoActivities() {
+      let seed = 2026;
+      const rand = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+      const between = (a, b) => a + rand() * (b - a);
+      const home = [37.7694, -122.4862];
+      const kmPerDegLng = 111.32 * Math.cos(home[0] * Math.PI / 180);
+
+      function loopRoute(km) {
+        const harmonics = [2, 3, 4, 5].map(k => [k, between(0, 0.32 / k), between(0, 6.28)]);
+        const stretch = between(0.55, 1), rot = between(0, 6.28), pts = [];
+        const r = km / (2 * Math.PI * (1 + stretch) / 2);
+        for (let i = 0; i <= 80; i++) {
+          const t = (i / 80) * 2 * Math.PI;
+          const rr = r * (1 + harmonics.reduce((s, [k, a, ph]) => s + a * Math.sin(k * t + ph), 0));
+          let x = rr * (Math.cos(t) - 1), y = rr * Math.sin(t) * stretch;
+          [x, y] = [x * Math.cos(rot) - y * Math.sin(rot), x * Math.sin(rot) + y * Math.cos(rot)];
+          pts.push([home[0] + y / 111.32, home[1] + x / kmPerDegLng]);
+        }
+        return pts;
+      }
+
+      function outAndBack(km) {
+        const heading = between(0, 6.28), out = [], n = 40;
+        for (let i = 0; i <= n; i++) {
+          const d = (i / n) * km / 2, w = 0.25 * Math.sin(i / 3 + heading) * Math.min(1, d);
+          const x = d * Math.cos(heading) - w * Math.sin(heading), y = d * Math.sin(heading) + w * Math.cos(heading);
+          out.push([home[0] + y / 111.32, home[1] + x / kmPerDegLng]);
+        }
+        return out.concat(out.slice().reverse().map(([a, b]) => [a + 0.0002, b + 0.0002]));
+      }
+
+      const acts = [];
+      const end = Math.min(Date.now(), new Date(RECAP_YEAR + 1, 0, 1).getTime() - 1);
+      let id = 1;
+      for (let day = new Date(RECAP_YEAR, 0, 1); day.getTime() <= end; day.setDate(day.getDate() + 1)) {
+        const dow = day.getDay(), month = day.getMonth();
+        const chance = dow === 0 || dow === 6 ? 0.8 : dow === 1 ? 0.25 : 0.5;
+        if (rand() > chance) continue;
+        const roll = rand(), start = new Date(day);
+        start.setHours(dow === 0 || dow === 6 ? 8 : rand() < 0.6 ? 6 : 18, Math.floor(rand() * 60));
+        let type = 'Run', km, route = null, climb;
+        const isMarathon = month === 3 && day.getDate() === 12;
+        if (isMarathon) { km = 42.2; climb = 180; }
+        else if (roll < 0.12) { type = 'WeightTraining'; km = 0; climb = 0; }
+        else if (roll < 0.32) { type = 'Ride'; km = between(25, dow === 6 ? 95 : 50); climb = km * between(6, 14); }
+        else { km = dow === 0 ? between(14, 24) : between(5, 12); climb = km * between(3, 12); }
+        if (km > 0) route = rand() < 0.75 || type === 'Ride' ? loopRoute(km) : outAndBack(km);
+        const pace = type === 'Ride' ? between(150, 190) : between(290, 360); // seconds per km
+        const moving = km > 0 ? km * pace : between(2400, 3600);
+        acts.push({
+          id: id++, name: isMarathon ? 'Marathon' : type === 'Ride' ? 'Morning Ride' : type === 'Run' ? (km > 14 ? 'Long Run' : 'Easy Run') : 'Strength',
+          type, sport_type: type, start_date: start.toISOString(), start_date_local: start.toISOString(),
+          distance: km * 1000, moving_time: Math.round(moving), elapsed_time: Math.round(moving * 1.08),
+          total_elevation_gain: Math.round(climb), average_speed: km > 0 ? 1000 / pace : 0, max_speed: km > 0 ? 1000 / pace * 1.6 : 0,
+          has_heartrate: true, average_heartrate: Math.round(between(132, 158)), max_heartrate: Math.round(between(165, 189)),
+          kudos_count: Math.floor(between(0, isMarathon ? 60 : 18)), pr_count: rand() < 0.06 || isMarathon ? 1 : 0,
+          achievement_count: Math.floor(between(0, 4)), calories: Math.round(moving / 60 * between(9, 12)), kilojoules: Math.round(km * 25),
+          map: { summary_polyline: route ? encodePolyline(route) : '' }
+        });
+      }
+      return acts;
     }
 
     // Debug Logger
