@@ -2606,6 +2606,13 @@
     .poster-signoff { font: 500 13px 'DM Mono', ui-monospace, monospace; color: var(--dim); opacity: 0; transition: opacity 0.5s ease 0.2s; }
     .card-summary.played .poster-signoff { opacity: 1; }
     .tri-hero .context { margin-top: 12px; }
+    /* Playback: each day blooms in (colour fades up, square settles to full size) */
+    .intro-grid .heatmap-cell {
+      transition: background-color 420ms cubic-bezier(.2, .7, .2, 1), transform 420ms cubic-bezier(.2, .7, .2, 1), box-shadow 420ms ease;
+    }
+    .intro-grid .heatmap-cell.pending { transform: scale(0.55); }
+    .intro-grid.no-anim .heatmap-cell { transition: none; }
+    @media (prefers-reduced-motion: reduce) { .intro-grid .heatmap-cell { transition: none; } .intro-grid .heatmap-cell.pending { transform: none; } }
   </style>
 </head>
 
@@ -5032,7 +5039,12 @@
       const days = introDays;
       const dateEl = document.getElementById('introDate'), distEl = document.getElementById('introDist');
       document.getElementById('introUnit').textContent = getDistanceUnit();
+      // Reset to pending without animating backwards, then let each day fade in as it's reached.
+      const grid = document.getElementById('introGrid');
+      grid.classList.add('no-anim');
       days.forEach(d => d.el.classList.add('pending'));
+      void grid.offsetWidth;
+      grid.classList.remove('no-anim');
       const cumulative = [];
       days.reduce((sum, d, i) => (cumulative[i] = sum + d.metres), 0);
       let shown = 0;
