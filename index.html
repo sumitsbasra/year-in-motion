@@ -5012,6 +5012,18 @@
     const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const easeInOut = t => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
 
+    // CSS-style cubic-bezier timing function, solved for y at a given x (time).
+    function cubicBezier(x1, y1, x2, y2) {
+      const cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx;
+      const cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by;
+      const X = t => ((ax * t + bx) * t + cx) * t, Y = t => ((ay * t + by) * t + cy) * t, dX = t => (3 * ax * t + 2 * bx) * t + cx;
+      return x => {
+        let t = x;
+        for (let i = 0; i < 8; i++) { const d = dX(t); if (Math.abs(d) < 1e-6) break; t -= (X(t) - x) / d; }
+        return Y(Math.min(1, Math.max(0, t)));
+      };
+    }
+
     function makeAnimation(duration, onFrame, onDone) {
       const anim = { done: false };
       const start = performance.now();
@@ -5048,10 +5060,10 @@
       const cumulative = [];
       days.reduce((sum, d, i) => (cumulative[i] = sum + d.metres), 0);
       let shown = 0;
-      // Accelerate the whole way: January arrives a day at a time, then the year gathers pace.
-      const accelerate = t => Math.pow(t, 2.6);
-      return makeAnimation(3600, t => {
-        const k = Math.round(accelerate(t) * days.length);
+      // Slow start, gathers pace through the year, then settles onto the last few days.
+      const pace = cubicBezier(0.75, 0, 0.35, 1);
+      return makeAnimation(4000, t => {
+        const k = Math.round(pace(t) * days.length);
         for (; shown < k; shown++) days[shown].el.classList.remove('pending');
         const last = days[Math.max(0, k - 1)];
         if (last) {
