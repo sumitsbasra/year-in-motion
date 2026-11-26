@@ -2586,7 +2586,6 @@
     /* Onboarding and loading: no emoji, plain copy */
     .onboarding-title { font-size: clamp(2rem, 9vw, 2.6rem); }
     .info-badge-small { background: none; border: 0; padding: 0; color: var(--dim); font: 400 12px 'DM Mono', ui-monospace, monospace; }
-    .emoji-cycler { display: none; }
     .loading-label { margin-bottom: 14px; font: 500 11px 'DM Mono', ui-monospace, monospace; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dim); }
     .loading-text { font-weight: 500; }
     /* Craft pass, round 2 */
@@ -2849,8 +2848,8 @@
 
   <!-- Loading Screen -->
   <div class="loading-screen hidden" id="loadingScreen">
-    <div class="loading-label">recap.fit</div>
-    <div class="loading-text" id="loadingText">Fetching your activities...</div>
+    <div class="emoji-cycler" id="emojiCycler">🏃</div>
+    <div class="loading-text" id="loadingText">Warming up...</div>
     <div class="loading-progress-container">
       <div class="loading-progress-bar"></div>
     </div>
@@ -5170,14 +5169,31 @@
 
     let emojiInterval;
     let textInterval;
+    const emojis = ['🏃', '🚴', '🏊', '🚶', '🥾', '💪', '🧘', '⛷️'];
+    const loadingPhrases = ['Warming up...', 'Stretching...', 'Processing your year...'];
 
     function showLoading() {
       document.getElementById('loadingScreen').classList.remove('hidden');
       hideLogin(); // Explicitly hide login screen
 
-      // Status text comes from the real fetch steps (updateLoadingText), never a timer.
+      // Start emoji cycling
+      if (emojiInterval) clearInterval(emojiInterval);
+      let i = 0;
+      const el = document.getElementById('emojiCycler');
+      emojiInterval = setInterval(() => {
+        el.textContent = emojis[i];
+        i = (i + 1) % emojis.length;
+      }, 500);
+
+      // Start text cycling
+      if (textInterval) clearInterval(textInterval);
+      let j = 0;
       const textEl = document.getElementById('loadingText');
-      if (arguments[0]) textEl.textContent = arguments[0];
+      textEl.textContent = loadingPhrases[0];
+      textInterval = setInterval(() => {
+        j = (j + 1) % loadingPhrases.length;
+        textEl.textContent = loadingPhrases[j];
+      }, 2000);
     }
 
     function updateLoadingText(text) {
