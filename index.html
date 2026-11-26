@@ -2494,6 +2494,14 @@
     .yoy-chip { padding: 5px 10px; border-radius: 999px; background: var(--surface); border: 1px solid var(--border); font: 500 11px 'DM Mono', ui-monospace, monospace; }
     .ds-sub { margin: 18px 0 8px; font: 500 10px 'DM Mono', ui-monospace, monospace; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dim); }
     .ds-grid + .ds-table-wrap { margin-top: 14px; }
+    /* Race season */
+    .season { width: 100%; margin-top: 22px; text-align: left; }
+    .season-head { display: flex; justify-content: space-between; padding-bottom: 6px; border-bottom: 1px solid var(--border); font: 500 10px 'DM Mono', ui-monospace, monospace; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dim); }
+    .season-row { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto 54px; gap: 10px; align-items: baseline; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 14px; font-variant-numeric: tabular-nums; }
+    .season-date { font: 400 11px 'DM Mono', ui-monospace, monospace; color: var(--dim); }
+    .season-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .season-row b { font-weight: 600; }
+    .season-delta { text-align: right; font: 500 12px 'DM Mono', ui-monospace, monospace; }
   </style>
 </head>
 
@@ -5743,8 +5751,6 @@
       try { localStorage.setItem('recap_race_details', JSON.stringify(cache)); } catch (e) { /* storage blocked */ }
     }
 
-    // Riegel: T2 = T1 × (D2 / D1)^1.06. Puts every race on one scale: the marathon it predicts.
-    const marathonEquivalent = a => a.moving_time * Math.pow(42195 / a.distance, 1.06);
     const STANDARD_RACES = [[5000, '5K'], [10000, '10K'], [21097, 'Half marathon'], [42195, 'Marathon']];
     const standardName = m => { const s = STANDARD_RACES.find(([d]) => Math.abs(m - d) / d < 0.04); return s ? s[1] : null; };
     const shortName = (a, n = 18) => { const s = a.name || 'Race'; return s.length > n ? s.slice(0, n - 1) + '…' : s; };
@@ -5796,67 +5802,73 @@
       return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Pace for each ${isMetric() ? 'kilometre' : 'mile'} of ${esc(a.name)}">${out}</svg>`;
     }
 
+    // A run on a day that also has a swim and a ride is the last leg of a triathlon, not a standalone race.
+    function isTriRun(a, pool) {
+      const day = new Date(a.start_date).toDateString();
+      const same = pool.filter(x => new Date(x.start_date).toDateString() === day);
+      return same.some(x => sportOf(x) === 'swim') && same.some(x => sportOf(x) === 'ride');
+    }
+
     function yearOverYear(runRaces) {
-      const prev = previousYearActivities.filter(a => sportOf(a) === 'run' && isRace(a));
+      runRaces = runRaces.filter(a => !isTriRun(a, yearActivities.length ? yearActivities : activitiesData));
+      const prev = previousYearActivities.filter(a => sportOf(a) === 'run' && isRace(a) && !isTriRun(a, previousYearActivities));
       if (!prev.length) return null;
       const bestBy = list => { const m = {}; list.forEach(a => { const n = standardName(a.distance); if (n && (!m[n] || a.moving_time < m[n].moving_time)) m[n] = a; }); return m; };
       const now = bestBy(runRaces), then = bestBy(prev);
       const rows = STANDARD_RACES.map(([, n]) => n).filter(n => now[n] || then[n])
         .map(n => ({ n, now: now[n], then: then[n], diff: now[n] && then[n] ? now[n].moving_time - then[n].moving_time : null }));
-      const eqBest = list => { const l = list.filter(a => a.distance >= 3000); return l.length ? l.reduce((b, a) => (marathonEquivalent(a) < marathonEquivalent(b) ? a : b)) : null; };
       const KEY = ['1k', '1 mile', '5k', '10k', '10 mile', 'Half-Marathon', '30k', 'Marathon'];
       const efforts = list => { const m = {}; list.forEach(a => ((a.detail && a.detail.best_efforts) || []).forEach(e => { if (KEY.includes(e.name) && (!m[e.name] || e.elapsed_time < m[e.name])) m[e.name] = e.elapsed_time; })); return m; };
       const effNow = efforts(runRaces), effThen = efforts(prev);
-      return { prev, rows, fitNow: eqBest(runRaces), fitThen: eqBest(prev), effortRows: KEY.filter(k => effNow[k] && effThen[k]).map(k => ({ k, now: effNow[k], then: effThen[k] })) };
+      return { prev, rows, effortRows: KEY.filter(k => effNow[k] && effThen[k]).map(k => ({ k, now: effNow[k], then: effThen[k] })) };
     }
     const deltaText = d => (d == null ? '—' : Math.abs(d) < 1 ? 'same' : `${d < 0 ? '−' : '+'}${fmtClock(Math.abs(d))}`);
     const deltaCell = d => (d == null ? '—' : `<span class="${d < 0 ? 'faster' : 'slower'}">${deltaText(d)}</span>`);
 
     function racesHero(runRaces, tris) {
-      const ranked = [...runRaces].filter(a => a.distance >= 3000).sort((a, b) => marathonEquivalent(a) - marathonEquivalent(b));
-      const best = ranked[0];
-      const W = 320, rowH = 30, list = ranked.slice(0, 6);
-      const worst = Math.max(...list.map(marathonEquivalent)), bestT = marathonEquivalent(best);
-      let rows = '';
-      list.forEach((a, i) => {
-        const eq = marathonEquivalent(a), w = 90 + 130 * (1 - (eq - bestT) / ((worst - bestT) || 1)) ;
-        rows += `<text x="0" y="${i * rowH + 18}" font-size="12" font-family="DM Sans, sans-serif" fill="${i === 0 ? '#F4EFEA' : '#A8A098'}">${esc(shortName(a, 16))}</text>
-          <rect x="120" y="${i * rowH + 7}" width="${(w * (W - 190) / 220).toFixed(1)}" height="14" rx="3" fill="${i === 0 ? '#FF7A45' : '#5E3020'}"/>
-          <text x="${W}" y="${i * rowH + 18}" text-anchor="end" font-size="11" font-family="DM Mono, monospace" fill="${i === 0 ? '#F4EFEA' : '#A8A098'}">${fmtClock(eq)}</text>`;
-      });
-      const fastestPace = [...runRaces].sort((a, b) => a.moving_time / a.distance - b.moving_time / b.distance)[0];
+      const chron = [...runRaces].sort((a, b) => new Date(a.start_date) - new Date(b.start_date));
+      const y = yearOverYear(runRaces);
+      const thenBest = {};
+      if (y) y.rows.forEach(r => { if (r.then) thenBest[r.n] = r.then.moving_time; });
+      const both = y ? y.rows.filter(r => r.diff != null) : [];
+      const gains = both.filter(r => r.diff < 0).sort((a, b) => a.diff - b.diff);
+      const last = RECAP_YEAR - 1;
+      const title = gains.length
+        ? `${gains[0].n}: <em>${fmtClock(-gains[0].diff)} faster</em> than ${last}`
+        : `${fmtNum(chron.length)} race${chron.length === 1 ? '' : 's'} in ${RECAP_YEAR}`;
+      const sub = gains.length
+        ? `${fmtClock(gains[0].then.moving_time)} → ${fmtClock(gains[0].now.moving_time)}. ${gains.length === both.length ? (both.length > 1 ? `Faster at all ${both.length} distances you raced both years.` : '') : `Faster at ${gains.length} of ${both.length} distances you raced both years.`}`
+        : y ? `No distance raced in both ${last} and ${RECAP_YEAR} yet, so there's nothing like-for-like to compare.` : `Every race this season, in order.`;
+      const pool = yearActivities.length ? yearActivities : activitiesData;
+      const rows = chron.slice(-7).map(a => {
+        const tri = isTriRun(a, pool);
+        const n = standardName(a.distance), prev = n && !tri ? thenBest[n] : null, d = prev ? a.moving_time - prev : null;
+        return `<div class="season-row"><span class="season-date">${fmtDate(a.start_date)}</span><span class="season-name">${esc(a.name || 'Race')}</span>
+          <b>${fmtClock(a.moving_time)}</b><span class="season-delta">${tri ? '<span class="slower">tri</span>' : d == null ? '' : `<span class="${d < 0 ? 'faster' : 'slower'}">${deltaText(d)}</span>`}</span></div>`;
+      }).join('');
       return `
         <div class="stat-content sport-hero races-hero">
           <div class="label">Races · ${RECAP_YEAR}</div>
-          <div class="races-title">Your best race was <em>${esc(best.name || 'a race')}</em></div>
-          <div class="context">${fmtClock(best.moving_time)} for ${fmtDist(best.distance, 'run')}. That's worth a <em>${fmtClock(bestT)} marathon</em>.</div>
-          <div class="races-ladder"><div class="races-ladder-head"><span>Race</span><span>Marathon equivalent</span></div>
-            <svg viewBox="0 0 ${W} ${list.length * rowH}" role="img" aria-label="Races ranked by equivalent marathon time">${rows}</svg></div>
-          ${(() => {
-            const y = yearOverYear(runRaces);
-            // Like-for-like: only distances raced in both years.
-            const both = y ? y.rows.filter(r => r.diff != null) : [];
-            if (!both.length) return '';
-            const faster = both.filter(r => r.diff < 0).length;
-            const lead = faster === both.length ? `faster at every distance you raced both years`
-              : faster ? `faster at ${faster} of ${both.length} distances you raced both years` : `not faster yet at the distances you raced both years`;
-            const chips = both.slice(0, 3).map(r => `<span class="yoy-chip ${r.diff < 0 ? 'faster' : 'slower'}">${r.n} ${deltaText(r.diff)}</span>`).join('');
-            return `<div class="yoy"><div class="yoy-line">vs ${RECAP_YEAR - 1}: <b class="${faster ? 'faster' : 'slower'}">${lead}</b></div><div class="yoy-chips">${chips}</div></div>`;
-          })()}
+          <div class="races-title">${title}</div>
+          <div class="context">${sub}</div>
+          <div class="season">
+            <div class="season-head"><span>${RECAP_YEAR} season</span><span>${y && Object.keys(thenBest).length ? `vs ${last} best` : ''}</span></div>
+            ${rows}
+          </div>
           <div class="sport-trio">
-            <div><b>${fmtNum(runRaces.length + tris.length)}</b><span>races</span></div>
-            <div><b>${paceText(fastestPace.moving_time, fastestPace.distance, 'run').split(' ')[0]}</b><span>fastest pace</span></div>
+            <div><b>${fmtNum(runRaces.length)}</b><span>races</span></div>
             <div><b>${fmtNum(getDistanceValue(runRaces.reduce((t, a) => t + a.distance, 0)))}</b><span>${getDistanceUnit()} raced</span></div>
+            <div><b>${y ? `${gains.length}/${both.length}` : fmtNum(new Set(chron.map(a => standardName(a.distance)).filter(Boolean)).size)}</b><span>${y ? `faster than ${last}` : 'distances'}</span></div>
           </div>
         </div>`;
     }
 
     function racesDetails(runRaces, rideRaces, tris) {
-      const ranked = [...runRaces].filter(a => a.distance >= 3000).sort((a, b) => marathonEquivalent(a) - marathonEquivalent(b));
       const chron = [...runRaces].sort((a, b) => new Date(a.start_date) - new Date(b.start_date));
       // Like-for-like: same standard distance raced more than once.
       const groups = {};
-      chron.forEach(a => { const n = standardName(a.distance); if (n) (groups[n] = groups[n] || []).push(a); });
+      const pool = yearActivities.length ? yearActivities : activitiesData;
+      chron.forEach(a => { const n = standardName(a.distance); if (n && !isTriRun(a, pool)) (groups[n] = groups[n] || []).push(a); });
       const likeRows = Object.entries(groups).filter(([, l]) => l.length > 1).flatMap(([n, l]) => l.map((a, i) => [
         i ? '' : n, fmtDate(a.start_date), esc(a.name || ''), fmtClock(a.moving_time),
         i ? `${a.moving_time <= l[0].moving_time ? '−' : '+'}${fmtClock(Math.abs(a.moving_time - l[0].moving_time))}` : '—',
@@ -5882,17 +5894,14 @@
           return section(`${RECAP_YEAR} vs ${last}`,
             statGrid([
               ['Races', `${fmtNum(runRaces.length)} vs ${fmtNum(y.prev.length)}`],
-              y.fitNow && y.fitThen ? ['Race fitness', deltaText(marathonEquivalent(y.fitNow) - marathonEquivalent(y.fitThen)), `${fmtClock(marathonEquivalent(y.fitThen))} → ${fmtClock(marathonEquivalent(y.fitNow))} marathon equivalent`] : null
+              ['Faster', `${y.rows.filter(r => r.diff != null && r.diff < 0).length} of ${y.rows.filter(r => r.diff != null).length}`, 'distances raced in both years']
             ]) +
             table([{ h: 'Distance' }, { h: String(last), num: true }, { h: String(RECAP_YEAR), num: true }, { h: 'Change', num: true }],
               y.rows.map(r => [r.n, r.then ? fmtClock(r.then.moving_time) : '—', r.now ? fmtClock(r.now.moving_time) : '—', deltaCell(r.diff)])) +
             (y.effortRows.length ? `<div class="ds-sub">Best efforts inside races</div>` + table([{ h: 'Distance' }, { h: String(last), num: true }, { h: String(RECAP_YEAR), num: true }, { h: 'Change', num: true }],
               y.effortRows.map(r => [r.k.replace('-', ' '), fmtClock(r.then), fmtClock(r.now), deltaCell(r.now - r.then)])) : ''),
-            `Your best race time at each distance in each year. Race fitness compares each year's best marathon-equivalent race; Riegel flatters short races, so it can disagree with the like-for-like times above.`);
+            `Your best race time at each distance in each year. Only the same distance is compared.`);
         })()}
-        ${section('Which race was best?', table([{ h: '#', num: true }, { h: 'Race', name: true }, { h: 'Time', num: true }, { h: 'Marathon eq.', num: true }],
-          ranked.map((a, i) => [String(i + 1), esc(a.name || ''), fmtClock(a.moving_time), fmtClock(marathonEquivalent(a))])),
-          'Each race converted to the marathon time it predicts (Riegel: time × (42.2 km ÷ distance)^1.06), so a 10K and a marathon can be compared fairly. Lower is better. Hilly courses and race-day heat will skew it.')}
         ${likeRows.length ? section('Same distance, different day', table([{ h: 'Distance' }, { h: 'Date' }, { h: 'Race', name: true }, { h: 'Time', num: true }, { h: 'vs first', num: true }, { h: 'HR', num: true }], likeRows)) : ''}
         ${tris.length ? section('Triathlons', table([{ h: 'Date' }, { h: 'Type' }, { h: 'Swim', num: true }, { h: 'Bike', num: true }, { h: 'Run', num: true }, { h: 'Total', num: true }],
           tris.map(t => [fmtDate(t.date), t.type, fmtClock(t.swim.moving_time), fmtClock(t.bike.moving_time), fmtClock(t.run.moving_time), fmtClock(t.time)])),
@@ -5912,7 +5921,7 @@
       const runRaces = selectedSports.includes('run') ? activitiesData.filter(a => sportOf(a) === 'run' && isRace(a)) : [];
       const rideRaces = selectedSports.includes('ride') ? activitiesData.filter(a => sportOf(a) === 'ride' && isRace(a)) : [];
       const tris = ['run', 'ride', 'swim'].every(k => selectedSports.includes(k)) ? triathlonDays(activitiesData) : [];
-      if (!runRaces.some(a => a.distance >= 3000)) return;
+      if (!runRaces.length) return;
       const card = document.createElement('div');
       card.className = 'story-card card-sport card-races';
       card.innerHTML = `<div class="hero-section">${racesHero(runRaces, tris)}</div>`;
