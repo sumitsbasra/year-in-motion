@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Year In Motion</title>
   <link rel="icon"
-    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔄</text></svg>">
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect width=%2232%22 height=%2232%22 rx=%228%22 fill=%22%230F0E0D%22/><path d=%22M8 21c3-9 6-12 8-12s4 5 8 3%22 fill=%22none%22 stroke=%22%23FF7A45%22 stroke-width=%223%22 stroke-linecap=%22round%22/></svg>">
 
   <link
     href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&family=Unbounded:wght@400..900&display=swap"
@@ -2502,6 +2502,107 @@
     .season-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .season-row b { font-weight: 600; }
     .season-delta { text-align: right; font: 500 12px 'DM Mono', ui-monospace, monospace; }
+    /* ============================================
+       CRAFT PASS: one anchored column, one accent, display type only at display sizes,
+       hairlines instead of boxes, flat ground.
+       ============================================ */
+    :root { --accent: #FF7A45; --accent-ink: #140600; --gutter: 24px; --col: min(342px, calc(100vw - 48px)); }
+
+    /* Flat ground: no drifting glow, no noise */
+    .gradient-spotlight { background: var(--night) !important; }
+    .gradient-spotlight::before, .gradient-spotlight::after { display: none; }
+
+    /* Every hero: the same column, top-anchored, left-aligned, so the eyebrow sits at the same height on every card */
+    .story-card .hero-section {
+      justify-content: flex-start;
+      align-items: center;
+      padding: calc(84px + env(safe-area-inset-top, 0px)) var(--gutter) calc(80px + env(safe-area-inset-bottom, 0px));
+    }
+    .story-card .stat-content, .story-card .intro-content, .sport-hero, .tri-hero, .longest-content, .card-intro .intro-content {
+      width: var(--col);
+      align-items: flex-start;
+      text-align: left;
+    }
+    .story-card .label, .story-card .intro-label { margin: 0 0 18px; text-align: left; letter-spacing: 0.1em; }
+    .story-card .stat-huge { margin-left: -0.04em; }
+    .story-card .context { text-align: left; max-width: none; margin-top: 18px; font-size: 16px; line-height: 1.5; color: var(--dim); }
+    .story-card .context em { font-style: normal; font-weight: 600; color: var(--cream); }
+    .stat-unit { margin-left: 6px; }
+
+    /* Display type only at display sizes; small numbers in DM Sans */
+    .sport-trio b, .ds-stat b, .mini-card-value, .tri-row-head span:first-child, .day-row b, .season-row b {
+      font-family: 'DM Sans', system-ui, sans-serif;
+    }
+
+    /* Key numbers: a hairline row, not three boxes */
+    .sport-trio { gap: 0; margin-top: 30px; border-top: 1px solid var(--border); }
+    .sport-trio > div { background: none; border: 0; border-radius: 0; padding: 14px 12px 0 0; text-align: left; min-width: 0; }
+    .sport-trio > div + div { padding-left: 14px; border-left: 1px solid var(--border); }
+    .sport-trio b { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; white-space: nowrap; }
+    .sport-trio span { margin-top: 3px; font: 400 12px 'DM Mono', ui-monospace, monospace; text-transform: none; letter-spacing: 0; color: var(--dim); }
+
+    /* Detail summaries: hairline grid */
+    .ds-grid { gap: 0; background: none; border: 0; border-radius: 0; border-top: 1px solid var(--border); }
+    .ds-stat { background: none; padding: 14px 0; border-bottom: 1px solid var(--border); }
+    .ds-stat:nth-child(even) { padding-left: 16px; border-left: 1px solid var(--border); }
+    .ds-stat:last-child:nth-child(odd) { border-left: 0; padding-left: 0; }
+    .ds-stat b { font-size: 20px; font-weight: 600; letter-spacing: -0.02em; }
+    .ds-stat em { color: var(--dim); }
+    .detail-sheet { border-radius: 0; border-top: 1px solid var(--border); padding-top: 36px; gap: 36px; }
+    .ds-head { font-size: 28px; }
+
+    /* One accent */
+    .poster-btn.primary, .picker-go, .onboarding-btn.primary { background: var(--accent); color: var(--accent-ink); box-shadow: none; }
+    .races-title em { color: var(--accent); }
+
+    /* Headlines left */
+    .tri-hero .label, .tri-title, .races-title { text-align: left; }
+    .tri-title { font-size: clamp(1.6rem, 7vw, 2.1rem); }
+    .tri-rows { margin-top: 28px; gap: 18px; }
+    .tri-bar { height: 6px; }
+    .share-legend, .yoy-chips { justify-content: flex-start; }
+    .share-bar { height: 8px; margin-top: 28px; }
+    .yoy-line { font-size: 15px; }
+
+    /* Longest day: units hug their numbers */
+    .longest-content .stat-unit { margin: 0 14px 0 3px; }
+    .longest-content .longest-route { margin: 0 0 8px; }
+
+    /* Consistency: dim everything but the streak */
+    .heatmap-cell.hm-streak { box-shadow: none; }
+    .streak-hero .heatmap-cell:not(.hm-streak):not(.hm-future):not(.hm-none):not(.l0) { opacity: 0.32; }
+    .streak-hero .hm-legend { display: none; }
+
+    /* Best month: a quieter calendar */
+    .cal { width: min(300px, 100%); gap: 4px; margin-top: 26px; }
+    .cal-cell { border-radius: 6px; padding: 3px 4px; }
+
+    /* Scroll hint: static, on the column edge */
+    .more-hint {
+      left: max(var(--gutter), calc(50% - 171px)); transform: none; animation: none;
+      letter-spacing: 0.08em; text-transform: none; font-size: 12px;
+    }
+
+    /* Onboarding and loading: no emoji, plain copy */
+    .onboarding-title { font-size: clamp(2rem, 9vw, 2.6rem); }
+    .info-badge-small { background: none; border: 0; padding: 0; color: var(--dim); font: 400 12px 'DM Mono', ui-monospace, monospace; }
+    .emoji-cycler { display: none; }
+    .loading-label { margin-bottom: 14px; font: 500 11px 'DM Mono', ui-monospace, monospace; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dim); }
+    .loading-text { font-weight: 500; }
+    /* Craft pass, round 2 */
+    .story-card { padding: 0 !important; }
+    .grid-overlay { display: none; }
+    .sport-trio span { font-size: 11px; line-height: 1.35; }
+    .onboarding-gradient::before { display: none; }
+    .onboarding-screen { background: var(--night); }
+    .onboarding-content { text-align: left; align-items: flex-start; max-width: 342px; margin: 0 auto; }
+    .onboarding-btn.primary { align-self: stretch; justify-content: center; border-radius: 16px; min-height: 54px; }
+    .progress-dot.active, .progress-dot.completed { background: var(--accent); }
+    .card-intro .tap-hint {
+      left: max(var(--gutter), calc(50% - 171px)); transform: none; bottom: calc(22px + env(safe-area-inset-bottom, 0px));
+      font: 500 12px 'DM Mono', ui-monospace, monospace; letter-spacing: 0.08em; text-transform: none; color: var(--dim); opacity: 1;
+    }
+    .loading-progress-bar { background: var(--accent) !important; }
   </style>
 </head>
 
@@ -2543,26 +2644,21 @@
     <!-- Step 1: Welcome -->
     <div class="onboarding-step active" id="onboardingStep1">
       <div class="onboarding-content">
-        <div class="onboarding-icon">🏃‍♂️</div>
-        <h1 class="onboarding-title">Your Year in Motion</h1>
+        <h1 class="onboarding-title">Your year in motion</h1>
         <p class="onboarding-subtitle">Get your personalized <span data-recap-year>2026</span> fitness recap in 2 minutes</p>
         <p class="onboarding-description">
           This app runs entirely in your browser. You'll connect your own Strava API access — your data never touches
           our servers.
         </p>
         <button class="onboarding-btn primary" onclick="nextOnboardingStep()">
-          Let's Go
+          Get started
           <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
             <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z" />
           </svg>
         </button>
         <div class="onboarding-info">
           <div class="info-badge-small">
-            <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14">
-              <path
-                d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z" />
-            </svg>
-            <span>100% Private</span>
+            <span>Runs in your browser. Nothing is stored on a server.</span>
           </div>
         </div>
       </div>
@@ -2753,8 +2849,8 @@
 
   <!-- Loading Screen -->
   <div class="loading-screen hidden" id="loadingScreen">
-    <div class="emoji-cycler" id="emojiCycler">🏃</div>
-    <div class="loading-text" id="loadingText">Warming up...</div>
+    <div class="loading-label">recap.fit</div>
+    <div class="loading-text" id="loadingText">Fetching your activities...</div>
     <div class="loading-progress-container">
       <div class="loading-progress-bar"></div>
     </div>
@@ -5011,7 +5107,7 @@
           <svg class="longest-route" viewBox="0 0 300 300" aria-hidden="true"><path id="longestPath" d="${d}"></path></svg>
           <div class="longest-reveal">
             <div class="stat-huge">${h}<span class="stat-unit">h</span>&nbsp;${String(m).padStart(2, '0')}<span class="stat-unit">m</span></div>
-            <div class="context"><em>${date}</em>. ${nameLine}${multi && dist ? `: ${fmtDist(dist, 'run')} in one day` : ''}. That's <em>${fmtNum(time / avg, 1)}×</em> your average session.</div>
+            <div class="context"><em>${date}</em>. ${nameLine}${multi && dist ? `: ${fmtDist(dist, 'run')} in one day` : ''}.</div>
             ${multi ? `
               <div class="day-bar" role="img" aria-label="Time in each activity that day">${day.map(a => `<i style="flex:${a.moving_time};background:${sportMeta(sportOf(a)).color}"></i>`).join('')}</div>
               <div class="day-rows">${day.map(a => `<div class="day-row"><i style="background:${sportMeta(sportOf(a)).color}"></i><span class="day-name">${esc(a.name || sportMeta(sportOf(a)).short)}</span><span>${a.distance ? fmtDist(a.distance, sportOf(a)) : ''}</span><b>${fmtClock(a.moving_time)}</b></div>`).join('')}</div>`
@@ -5074,31 +5170,14 @@
 
     let emojiInterval;
     let textInterval;
-    const emojis = ['🏃', '🚴', '🏊', '🚶', '🥾', '💪', '🧘', '⛷️'];
-    const loadingPhrases = ['Warming up...', 'Stretching...', 'Processing your year...'];
 
     function showLoading() {
       document.getElementById('loadingScreen').classList.remove('hidden');
       hideLogin(); // Explicitly hide login screen
 
-      // Start emoji cycling
-      if (emojiInterval) clearInterval(emojiInterval);
-      let i = 0;
-      const el = document.getElementById('emojiCycler');
-      emojiInterval = setInterval(() => {
-        el.textContent = emojis[i];
-        i = (i + 1) % emojis.length;
-      }, 500);
-
-      // Start text cycling
-      if (textInterval) clearInterval(textInterval);
-      let j = 0;
+      // Status text comes from the real fetch steps (updateLoadingText), never a timer.
       const textEl = document.getElementById('loadingText');
-      textEl.textContent = loadingPhrases[0];
-      textInterval = setInterval(() => {
-        j = (j + 1) % loadingPhrases.length;
-        textEl.textContent = loadingPhrases[j];
-      }, 2000);
+      if (arguments[0]) textEl.textContent = arguments[0];
     }
 
     function updateLoadingText(text) {
@@ -5437,7 +5516,7 @@
       const best = bars.indexOf(Math.max(...bars));
       const keyMetric = s.key === 'ride' ? [paceText(s.time, s.dist, 'ride'), 'avg speed']
         : s.key === 'other' ? [fmtNum(s.count), 'sessions']
-        : [paceText(s.time, s.dist, s.key).split(' ')[0], `avg pace ${paceText(s.time, s.dist, s.key).split(' ')[1] || ''}`];
+        : [paceText(s.time, s.dist, s.key).split(' ')[0], `avg per ${(paceText(s.time, s.dist, s.key).split(' ')[1] || '').replace('/', '')}`];
       return `
         <div class="stat-content sport-hero">
           <div class="label">${meta.label} · ${RECAP_YEAR}</div>
@@ -5494,8 +5573,8 @@
       ]), 'Weighted power is Strava’s estimate of what a ride cost you, smoothing out coasting and surges.') : '';
 
       return `
-        <div class="ds-head">${meta.label}, in full</div>
-        ${section('The numbers', numbers)}
+        <div class="ds-head">${meta.label}</div>
+        ${section('Summary', numbers)}
         ${section('Month by month', table(monthCols, monthRows))}
         ${s.dist && k !== 'other' ? section(k === 'ride' ? 'Speed by month' : 'Pace by month', lineChart(paceSeries, { labels: monthLabels(), fmt: v => (k === 'ride' ? fmtNum(v, 1) : fmtClock(v)), invert: k !== 'ride', color: meta.color, aria: `${meta.label} ${k === 'ride' ? 'speed' : 'pace'} by month` }), k === 'ride' ? 'Races are left out of the trend.' : 'Higher on the chart is faster. Races are left out of the trend.') : ''}
         ${s.dist ? section('Every week', barChart(s.weeks.slice(0, weekOfYear(new Date()) + 1), { colors: [meta.color], height: 110, highlight: best, highlightLabel: `${fmtDist(s.weeks[best], k)} · ${fmtDate(weekStart)}`, aria: `Weekly ${meta.label} distance` }), `Biggest week: ${fmtDist(s.weeks[best], k)}, week of ${fmtDate(weekStart)}.`) : ''}
@@ -5526,13 +5605,13 @@
       return `
         <div class="stat-content tri-hero">
           <div class="label">Ironman check · ${RECAP_YEAR}</div>
-          <div class="tri-title">${all ? 'You covered every Ironman distance this year.' : 'Your longest swim, ride and run, against Ironman distances.'}</div>
+          <div class="tri-title">${all ? 'Every Ironman distance, covered.' : 'Your longest swim, ride and run against Ironman distances.'}</div>
           <div class="tri-rows">
             ${rows.map(r => `
               <div class="tri-row">
                 <div class="tri-row-head"><span>${sportMeta(r.k).short}</span><span><b>${fmt(r.have, r.k)}</b> / ${fmt(IRONMAN[r.k], r.k)}</span></div>
                 <div class="tri-bar"><i style="width:${(r.pct * 100).toFixed(1)}%;background:${sportMeta(r.k).color}"></i></div>
-                <div class="tri-row-foot">${r.done ? 'Done' : `${fmtNum(r.pct * 100)}% of the way`}</div>
+                ${r.done ? '' : `<div class="tri-row-foot">${fmtNum(r.pct * 100)}% of the way</div>`}
               </div>`).join('')}
           </div>
         </div>`;
@@ -5576,7 +5655,7 @@
         scroller.addEventListener('scroll', onCardScroll, { passive: true });
       }
       const hero = scroller.querySelector('.hero-section');
-      if (hero && !hero.querySelector('.more-hint')) hero.insertAdjacentHTML('beforeend', '<div class="more-hint" aria-hidden="true">Details <svg width="10" height="10" viewBox="0 0 10 10"><path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>');
+      if (hero && !hero.querySelector('.more-hint')) hero.insertAdjacentHTML('beforeend', '<div class="more-hint" aria-hidden="true">Scroll for details <svg width="10" height="10" viewBox="0 0 10 10"><path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>');
       let sheet = scroller.querySelector('.detail-sheet');
       if (!sheet) { sheet = document.createElement('div'); sheet.className = 'detail-sheet'; scroller.appendChild(sheet); }
       sheet.innerHTML = html;
@@ -5617,8 +5696,8 @@
       // Distance
       const monthlyHours = MONTHS.slice(0, last).map((_, i) => keys.map(k => hoursOf(per[k].months[i].time)));
       setCardDetails(document.querySelector('.card-distance'), `
-        <div class="ds-head">Your year, by sport</div>
-        ${section('The numbers', statGrid([
+        <div class="ds-head">By sport</div>
+        ${section('Summary', statGrid([
           ['Sessions', fmtNum(acts.length)], ['Moving time', fmtHours(totalTime)],
           ['Hours a week', fmtNum(hoursOf(totalTime) / weeksSoFar, 1), 'averaged over the year so far'],
           ['Active days', fmtNum(new Set(acts.map(a => new Date(a.start_date).toDateString())).size)]
@@ -5631,7 +5710,7 @@
       const byDist = [...acts].sort((a, b) => (b.distance || 0) - (a.distance || 0)).slice(0, 8);
       const byTime = [...acts].sort((a, b) => (b.moving_time || 0) - (a.moving_time || 0)).slice(0, 8);
       setCardDetails(document.querySelector('.card-longest'), `
-        <div class="ds-head">Your biggest days</div>
+        <div class="ds-head">Biggest days</div>
         ${section('Longest by distance', table([{ h: 'Sport' }, { h: 'Date' }, { h: 'Name', name: true }, { h: 'Dist', num: true }],
           byDist.map(a => [sportCell(a), fmtDate(a.start_date), esc(a.name || ''), fmtDist(a.distance || 0, sportOf(a))])))}
         ${section('Longest by time', table([{ h: 'Sport' }, { h: 'Date' }, { h: 'Name', name: true }, { h: 'Time', num: true }],
@@ -5641,7 +5720,7 @@
       const climbs = [...acts].filter(a => a.total_elevation_gain).sort((a, b) => b.total_elevation_gain - a.total_elevation_gain).slice(0, 6);
       const elevMonths = MONTHS.slice(0, last).map((_, i) => keys.map(k => getElevationValue(per[k].months[i].elev)));
       setCardDetails(document.querySelector('.card-elevation'), `
-        <div class="ds-head">Every metre up</div>
+        <div class="ds-head">Climbing</div>
         ${section('Climbing by month', legend(keys) + barChart(elevMonths, { labels: MONTHS.slice(0, last).map(m => m[0]), colors, height: 120, aria: 'Elevation gain by month and sport' }))}
         ${section('Biggest climbs', table([{ h: 'Sport' }, { h: 'Date' }, { h: 'Name', name: true }, { h: 'Climb', num: true }],
           climbs.map(a => [sportCell(a), fmtDate(a.start_date), esc(a.name || ''), fmtElev(a.total_elevation_gain)])))}
@@ -5663,8 +5742,8 @@
       const busiest = dowHours.indexOf(Math.max(...dowHours)), topHour = hours.indexOf(Math.max(...hours));
       const hourLabel = h => `${h % 12 || 12}${h < 12 ? 'am' : 'pm'}`;
       setCardDetails(document.querySelector('.card-streak'), `
-        <div class="ds-head">How you showed up</div>
-        ${section('The numbers', statGrid([
+        <div class="ds-head">Consistency</div>
+        ${section('Summary', statGrid([
           ['Active days', fmtNum(dayKeys.length), `of ${fmtNum(daysElapsedInRecapYear())} so far`],
           ['Rest days', fmtNum(daysElapsedInRecapYear() - dayKeys.length)],
           ['Longest streak', `${fmtNum(best.len)} days`, best.len ? `${fmtDate(best.start * 86400000)} – ${fmtDate((best.start + best.len - 1) * 86400000)}` : ''],
@@ -5681,8 +5760,8 @@
       const inMonth = acts.filter(a => new Date(a.start_date).getMonth() === bm);
       const avgMonthTime = totalTime / last, monthTime = inMonth.reduce((t, a) => t + (a.moving_time || 0), 0);
       setCardDetails(document.querySelector('.card-month'), `
-        <div class="ds-head">${new Date(RECAP_YEAR, bm, 1).toLocaleDateString('en-US', { month: 'long' })}, up close</div>
-        ${section('The numbers', statGrid([
+        <div class="ds-head">${new Date(RECAP_YEAR, bm, 1).toLocaleDateString('en-US', { month: 'long' })}</div>
+        ${section('Summary', statGrid([
           ['Sessions', fmtNum(inMonth.length)], ['Moving time', fmtHours(monthTime), avgMonthTime ? `${fmtNum((monthTime / avgMonthTime - 1) * 100)}% above your average month` : ''],
           ['Active days', fmtNum(new Set(inMonth.map(a => new Date(a.start_date).getDate())).size)],
           ['Climbing', fmtElev(inMonth.reduce((t, a) => t + (a.total_elevation_gain || 0), 0))]
@@ -5858,7 +5937,7 @@
           <div class="sport-trio">
             <div><b>${fmtNum(runRaces.length)}</b><span>races</span></div>
             <div><b>${fmtNum(getDistanceValue(runRaces.reduce((t, a) => t + a.distance, 0)))}</b><span>${getDistanceUnit()} raced</span></div>
-            <div><b>${y ? `${gains.length}/${both.length}` : fmtNum(new Set(chron.map(a => standardName(a.distance)).filter(Boolean)).size)}</b><span>${y ? `faster than ${last}` : 'distances'}</span></div>
+            <div><b>${y ? `${gains.length}/${both.length}` : fmtNum(new Set(chron.map(a => standardName(a.distance)).filter(Boolean)).size)}</b><span>${y ? `faster vs ${last}` : 'distances'}</span></div>
           </div>
         </div>`;
     }
@@ -5884,7 +5963,7 @@
       const withSplits = chron.filter(a => a.detail && a.detail.splits_metric && a.detail.splits_metric.length >= 2).slice(-6).reverse();
 
       return `
-        <div class="ds-head">Every race, compared</div>
+        <div class="ds-head">Races</div>
         ${section('All races', table([{ h: 'Date' }, { h: 'Race', name: true }, { h: 'Dist', num: true }, { h: 'Time', num: true }, { h: `/${getDistanceUnit()}`, num: true }, { h: 'HR', num: true }],
           chron.map(a => [fmtDate(a.start_date), esc(a.name || ''), fmtNum(getDistanceValue(a.distance), 1), fmtClock(a.moving_time), paceText(a.moving_time, a.distance, 'run').split(' ')[0], a.average_heartrate ? fmtNum(a.average_heartrate) : '--'])))}
         ${(() => {
@@ -5979,7 +6058,7 @@
         <div class="stat-content sport-hero">
           <div class="label">Elevation gained · ${RECAP_YEAR}</div>
           <div class="stat-huge"><span class="counter" data-target="${Math.round(getElevationValue(climbAll))}">0</span><span class="stat-unit">${getElevationUnit()}</span></div>
-          <div class="context">You climbed Everest <em>${fmtNum(climbAll / 8849, 1)} times</em> over.</div>
+          <div class="context">Enough to climb Everest <em>${fmtNum(climbAll / 8849, 1)} times</em> from sea level.</div>
           <svg class="ridge" viewBox="0 0 ${W} ${H}" role="img" aria-label="Elevation gained, added up across the year, with a mark for each Everest">
             <polygon points="0,${H - 18} ${line} ${W},${H - 18}" fill="#2A1408"/>
             ${marks}
@@ -5987,9 +6066,9 @@
             ${monthTicks}
           </svg>
           <div class="sport-trio">
-            <div><b>${biggest ? fmtNum(getElevationValue(biggest.total_elevation_gain || 0)) : '--'}</b><span>biggest day (${getElevationUnit()})</span></div>
-            <div><b>${MONTHS[hilliest]}</b><span>hilliest month</span></div>
-            <div><b>${total ? fmtNum(getElevationValue(climbAll) / getDistanceValue(total)) : '--'}</b><span>${getElevationUnit()} per ${getDistanceUnit()}</span></div>
+            <div><b>${biggest ? `${fmtNum(getElevationValue(biggest.total_elevation_gain || 0))} ${getElevationUnit()}` : '--'}</b><span>biggest day</span></div>
+            <div><b>${MONTHS[hilliest]}</b><span>top month</span></div>
+            <div><b>${total ? fmtNum(getElevationValue(climbAll) / getDistanceValue(total)) : '--'}</b><span>${getElevationUnit()}/${getDistanceUnit()}</span></div>
           </div>
         </div>`);
 
@@ -5999,7 +6078,7 @@
         <div class="stat-content sport-hero streak-hero">
           <div class="label">Consistency · ${RECAP_YEAR}</div>
           <div class="stat-huge"><span class="counter" data-target="${dayKeys.length}">0</span><span class="stat-unit">days</span></div>
-          <div class="context">You moved on <em>${fmtNum(dayKeys.length / daysElapsedInRecapYear() * 100)}%</em> of days. Your longest streak is outlined.</div>
+          <div class="context">You moved on <em>${fmtNum(dayKeys.length / daysElapsedInRecapYear() * 100)}%</em> of days so far. <span id="streakNote"></span></div>
           <div class="heatmap-container"><div class="heatmap" id="heatmap"></div></div>
         </div>`);
 
@@ -6038,6 +6117,8 @@
         if (run.len > best.len) best = { ...run };
       });
       for (let i = best.s; i < best.s + best.len; i++) days[i].el.classList.add('hm-streak');
+      const note = document.getElementById('streakNote');
+      if (note && best.len > 1) note.innerHTML = `Your longest streak, highlighted: <em>${best.len} days</em> from ${fmtDate(days[best.s].date)} to ${fmtDate(days[best.s + best.len - 1].date)}.`;
     }
 
 
