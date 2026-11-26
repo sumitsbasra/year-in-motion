@@ -2356,6 +2356,95 @@
       border-radius: 50%;
       background: var(--orange-hot);
     }
+    /* Tap anywhere replaces the fixed side tap-zones, which blocked scrolling */
+    .nav-area { display: none; }
+
+    /* Hero + detail sheet */
+    .card-scroll { position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+    .card-scroll > .hero-section { min-height: 100vh; min-height: 100dvh; }
+    .more-hint {
+      position: absolute; left: 50%; bottom: calc(22px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
+      display: flex; align-items: center; gap: 6px; pointer-events: none;
+      font: 500 11px 'DM Mono', ui-monospace, monospace; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dim);
+      animation: hintBob 2.4s ease-in-out infinite;
+    }
+    @keyframes hintBob { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, 4px); } }
+    body.held .progress-bar.active .progress-fill { animation-play-state: paused; }
+    .detail-sheet {
+      position: relative; z-index: 2; max-width: 640px; margin: 0 auto; box-sizing: border-box;
+      display: flex; flex-direction: column; gap: 30px; text-align: left;
+      padding: 30px max(20px, env(safe-area-inset-left, 0px)) calc(64px + env(safe-area-inset-bottom, 0px));
+      background: var(--night); border-top: 1px solid var(--border); border-radius: 24px 24px 0 0;
+    }
+    .ds-head { font: 700 24px/1.1 var(--font-display), 'DM Sans', sans-serif; letter-spacing: -0.03em; }
+    .ds-section h3 { margin: 0 0 12px; font: 500 11px 'DM Mono', ui-monospace, monospace; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dim); }
+    .ds-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+    .ds-stat { background: var(--surface); padding: 14px; min-width: 0; }
+    .ds-stat:last-child:nth-child(odd) { grid-column: 1 / -1; }
+    .ds-stat span { display: block; font: 400 11px 'DM Mono', ui-monospace, monospace; color: var(--dim); }
+    .ds-stat b { display: block; margin-top: 4px; font: 600 19px var(--font-display), 'DM Sans', sans-serif; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+    .ds-stat em { display: block; margin-top: 4px; font-style: normal; font-size: 12px; line-height: 1.35; color: var(--ember-text); }
+    .ds-table-wrap { overflow-x: auto; margin: 0 -4px; }
+    .ds-table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+    .ds-table th { padding: 0 6px 8px; text-align: left; white-space: nowrap; font: 500 10px 'DM Mono', ui-monospace, monospace; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dim); border-bottom: 1px solid var(--border); }
+    .ds-table td { padding: 10px 6px; white-space: nowrap; border-bottom: 1px solid var(--border); }
+    .ds-table .num { text-align: right; }
+    .ds-table td.name { max-width: 150px; overflow: hidden; text-overflow: ellipsis; color: var(--dim); }
+    .ds-dot { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 6px; }
+    .ds-section svg { display: block; width: 100%; height: auto; overflow: visible; }
+    .ds-note { margin: 10px 0 0; font-size: 13px; line-height: 1.5; color: var(--dim); }
+    .ds-legend { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 10px; font: 400 11px 'DM Mono', ui-monospace, monospace; color: var(--dim); }
+    .ds-legend i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+
+    /* Sport chapter heroes */
+    .sport-hero, .tri-hero { width: min(360px, calc(100vw - 48px)); box-sizing: border-box; }
+    .tri-hero, .sport-hero { max-width: none; align-self: center; }
+    .tri-row-head { gap: 12px; }
+    .sport-months { margin-top: 26px; }
+    .sport-months svg { display: block; width: 100%; height: auto; overflow: visible; }
+    .sport-trio { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 22px; }
+    .sport-trio > div { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 12px 8px; }
+    .sport-trio b { display: block; font: 600 18px var(--font-display), 'DM Sans', sans-serif; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+    .sport-trio span { display: block; margin-top: 4px; font: 400 10px 'DM Mono', ui-monospace, monospace; color: var(--dim); text-transform: uppercase; letter-spacing: 0.04em; }
+    .tri-hero { text-align: left; }
+    .tri-hero .label { text-align: center; }
+    .tri-title { margin-top: 10px; font: 700 clamp(1.6rem, 7vw, 2.4rem)/1.08 var(--font-display), 'DM Sans', sans-serif; letter-spacing: -0.035em; text-align: center; text-wrap: balance; }
+    .tri-rows { display: flex; flex-direction: column; gap: 20px; margin-top: 32px; width: 100%; align-self: stretch; }
+    .sport-hero .sport-months, .sport-hero .sport-trio { width: 100%; align-self: stretch; }
+    .tri-row-head { display: flex; justify-content: space-between; align-items: baseline; font-size: 14px; color: var(--dim); }
+    .tri-row-head span:first-child { font: 600 15px var(--font-display), 'DM Sans', sans-serif; color: var(--cream); }
+    .tri-row-head b { color: var(--cream); font-weight: 600; }
+    .tri-bar { height: 10px; margin-top: 8px; border-radius: 5px; background: var(--surface-2); overflow: hidden; }
+    .tri-bar i { display: block; height: 100%; border-radius: 5px; transform-origin: left; transition: transform 1.2s cubic-bezier(.2,.8,.2,1) 0.3s; transform: scaleX(0); }
+    .story-card.active .tri-bar i { transform: scaleX(1); }
+    .tri-row-foot { margin-top: 6px; font: 400 11px 'DM Mono', ui-monospace, monospace; color: var(--dim); text-transform: uppercase; letter-spacing: 0.06em; }
+
+    /* Sport picker */
+    .sport-picker {
+      position: fixed; inset: 0; z-index: 3000; overflow-y: auto; background: var(--night); color: var(--cream);
+      display: flex; justify-content: center; align-items: flex-start; box-sizing: border-box;
+      padding: calc(56px + env(safe-area-inset-top, 0px)) max(24px, env(safe-area-inset-right, 0px)) calc(32px + env(safe-area-inset-bottom, 0px)) max(24px, env(safe-area-inset-left, 0px));
+    }
+    .picker-inner { width: min(420px, 100%); display: flex; flex-direction: column; gap: 18px; }
+    .picker-inner h2 { margin: 0; font: 700 34px/1.05 var(--font-display), 'DM Sans', sans-serif; letter-spacing: -0.04em; text-wrap: balance; }
+    .picker-sub { margin: 0; font-size: 15px; line-height: 1.5; color: var(--dim); }
+    .picker-list { display: flex; flex-direction: column; gap: 10px; margin-top: 6px; }
+    .picker-sport {
+      display: grid; grid-template-columns: 12px minmax(0, 1fr) 26px; column-gap: 14px; row-gap: 3px; align-items: center;
+      min-height: 64px; padding: 12px 16px; border-radius: 16px; text-align: left; cursor: pointer;
+      background: var(--surface); border: 1px solid var(--border); color: var(--cream); font: inherit;
+    }
+    .picker-sport:focus-visible, .picker-go:focus-visible { outline: 2px solid var(--orange-hot); outline-offset: 2px; }
+    .picker-swatch { grid-row: 1 / span 2; width: 12px; height: 12px; border-radius: 3px; }
+    .picker-name { font-weight: 600; font-size: 16px; }
+    .picker-meta { grid-column: 2; font: 400 12px 'DM Mono', ui-monospace, monospace; color: var(--dim); }
+    .picker-check { grid-row: 1 / span 2; grid-column: 3; width: 26px; height: 26px; border-radius: 50%; box-sizing: border-box; border: 1.5px solid #3A3430; display: flex; align-items: center; justify-content: center; }
+    .picker-check svg { opacity: 0; }
+    .picker-sport[aria-pressed="true"] { border-color: var(--orange-hot); background: #1E1611; }
+    .picker-sport[aria-pressed="true"] .picker-check { background: var(--orange-hot); border-color: transparent; }
+    .picker-sport[aria-pressed="true"] .picker-check svg { opacity: 1; }
+    .picker-go { margin-top: 8px; min-height: 54px; border: 0; border-radius: 16px; background: var(--orange-hot); color: #140600; font: 600 16px 'DM Sans', sans-serif; cursor: pointer; }
+    .picker-go:disabled { opacity: 0.4; cursor: default; }
   </style>
 </head>
 
@@ -2929,7 +3018,7 @@
     </div>
 
     <!-- 11: Morning -->
-    <div class="story-card card-morning" data-index="10">
+    <div class="story-card-cut card-morning" data-index="10">
       <div class="noise"></div>
       <div class="grid-overlay"></div>
       <div class="hero-section">
@@ -3049,12 +3138,17 @@
 
   <script>
     // Cards in the deck, in page order. Cut cards use .story-card-cut and stay out of the flow.
-    const DECK = Array.from(document.querySelectorAll('.story-card'));
-    DECK.forEach((card, i) => { card.dataset.index = i; });
-    const TOTAL_CARDS = DECK.length;
+    let DECK = [], TOTAL_CARDS = 0;
+    function rebuildDeck() {
+      DECK = Array.from(document.querySelectorAll('.story-card'));
+      DECK.forEach((card, i) => { card.dataset.index = i; card.classList.toggle('active', i === 0); });
+      TOTAL_CARDS = DECK.length;
+      currentIndex = 0;
+    }
     const AUTO_ADVANCE_TIME = 7500;
     let currentIndex = 0;
     let autoAdvanceTimer = null;
+    rebuildDeck();
 
     // Gradient spotlight config for each card: [color1, x1, y1, color2, x2, y2, baseColor]
     // Ember: a single faint warm glow that drifts position card to card (no per-card colour washes)
@@ -3064,7 +3158,7 @@
       ['rgba(255, 122, 69, 0.14)', x, y, 'rgba(160, 78, 40, 0.06)', `${100 - parseInt(x)}%`, `${100 - parseInt(y)}%`, '#0F0E0D']);
 
     function updateGradient(index) {
-      const config = gradientConfigs[index];
+      const config = gradientConfigs[index % gradientConfigs.length];
       const spotlight = document.getElementById('gradientSpotlight');
       spotlight.style.setProperty('--spot-color-1', config[0]);
       spotlight.style.setProperty('--spot-x-1', config[1]);
@@ -3088,6 +3182,7 @@
 
     function createProgressBars() {
       const container = document.getElementById('progressContainer');
+      container.innerHTML = '';
       for (let i = 0; i < TOTAL_CARDS; i++) {
         const bar = document.createElement('div');
         bar.className = 'progress-bar';
@@ -3101,6 +3196,7 @@
 
     function createKudosHearts() {
       const container = document.getElementById('kudosField');
+      container.innerHTML = '';
       for (let i = 0; i < 15; i++) {
         const heart = document.createElement('div');
         heart.className = 'kudos-heart';
@@ -3181,6 +3277,9 @@
       }
 
       fitDisplayText(nextCard);
+      document.body.classList.remove('held', 'in-details');
+      const scroller = nextCard.querySelector(':scope > .card-scroll');
+      if (scroller) scroller.scrollTop = 0;
       nextCard.classList.add('active');
       currentIndex = index;
       runCardAnimation(nextCard);
@@ -3194,7 +3293,10 @@
       if (currentIndex < TOTAL_CARDS - 1) { showCard(currentIndex + 1); resetAutoAdvance(); }
     }
     function prevCard() { if (currentIndex > 0) { showCard(currentIndex - 1); resetAutoAdvance(); } }
-    function startAutoAdvance() { if (currentIndex < TOTAL_CARDS - 1) autoAdvanceTimer = setTimeout(nextCard, AUTO_ADVANCE_TIME); }
+    function startAutoAdvance() {
+      if (document.body.classList.contains('held')) return;
+      if (currentIndex < TOTAL_CARDS - 1) autoAdvanceTimer = setTimeout(nextCard, AUTO_ADVANCE_TIME);
+    }
     function resetAutoAdvance() { clearTimeout(autoAdvanceTimer); startAutoAdvance(); }
 
     document.addEventListener('keydown', (e) => {
@@ -3202,12 +3304,20 @@
       else if (e.key === 'ArrowLeft') { e.preventDefault(); prevCard(); }
     });
 
-    let touchStartX = 0;
-    document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; }, { passive: true });
+    let touchStartX = 0, touchStartY = 0;
+    document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; touchStartY = e.touches[0].clientY; }, { passive: true });
     document.addEventListener('touchend', (e) => {
-      const diff = touchStartX - e.changedTouches[0].clientX;
-      if (Math.abs(diff) > 50) diff > 0 ? nextCard() : prevCard();
+      if (document.querySelector('.sport-picker')) return;
+      const dx = touchStartX - e.changedTouches[0].clientX, dy = touchStartY - e.changedTouches[0].clientY;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) dx > 0 ? nextCard() : prevCard();
     }, { passive: true });
+
+    document.addEventListener('click', (e) => {
+      if (document.getElementById('wrappedContent').classList.contains('hidden')) return;
+      if (e.target.closest('button, a, input, label, .detail-sheet, .sport-picker, .progress-container, .settings-panel')) return;
+      if (document.body.classList.contains('in-details')) return;
+      if (e.clientX < window.innerWidth * 0.3) prevCard(); else nextCard();
+    });
 
     // ============================================
     // STRAVA OAUTH & DATA INTEGRATION
@@ -3664,11 +3774,7 @@
 
         activitiesData = allActivities;
         debugLog(`Total activities fetched: ${activitiesData.length}`);
-        updateLoadingText('Processing your year...');
-
-        setTimeout(() => {
-          processAndDisplayData();
-        }, 500);
+        showSportPicker(allActivities);
 
       } catch (error) {
         console.error('Fetch error:', error);
@@ -3686,12 +3792,15 @@
         const stats = calculateStats(activitiesData);
         debugLog('Stats calculated. Updating UI...');
         updateUIWithStats(stats);
+        buildSportCards();
 
         // Re-render charts with real data
         debugLog('Rendering charts...');
         createHeatmap();
         introDays = createHeatmap('introGrid', { legend: false });
         updateLongestCard();
+        buildSharedDetails(stats);
+        rebuildDeck();
         createTimeBars(stats.timeDistribution);
         createMonthBars(stats.monthlyDistance);
 
@@ -4933,10 +5042,9 @@
     function checkAuth() {
       if (DEMO) {
         debugLog('Demo mode: loading sample year.');
-        activitiesData = generateDemoActivities();
         const label = document.querySelector('.card-intro .intro-label');
         if (label) label.textContent = 'recap.fit · sample data';
-        processAndDisplayData();
+        showSportPicker(generateDemoActivities());
         return;
       }
       const urlParams = new URLSearchParams(window.location.search);
@@ -4975,6 +5083,540 @@
     }
 
     // ============================================
+    // SPORTS: which sports go in the recap, and the deep stats behind each card.
+    // Everything here comes from Strava's activity summaries (no per-activity requests).
+    // ============================================
+
+    const SPORT_GROUPS = [
+      { key: 'run', label: 'Running', short: 'Run', noun: 'runs', types: ['Run', 'TrailRun', 'VirtualRun'], color: '#FF7A45' },
+      { key: 'ride', label: 'Cycling', short: 'Ride', noun: 'rides', types: ['Ride', 'VirtualRide', 'GravelRide', 'MountainBikeRide', 'EBikeRide', 'EMountainBikeRide', 'Handcycle', 'Velomobile'], color: '#FFD2B0' },
+      { key: 'swim', label: 'Swimming', short: 'Swim', noun: 'swims', types: ['Swim'], color: '#A04E28' },
+      { key: 'walk', label: 'Walking & hiking', short: 'Walk', noun: 'walks', types: ['Walk', 'Hike'], color: '#E2662F' },
+      { key: 'other', label: 'Everything else', short: 'Other', noun: 'sessions', types: [], color: '#6B5A4E' }
+    ];
+    const DEFAULT_SPORTS = ['run', 'ride', 'swim'];
+    const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const DOW = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    let yearActivities = [];
+    let selectedSports = [];
+
+    const sportOf = a => {
+      const t = a.sport_type || a.type || '';
+      const g = SPORT_GROUPS.find(group => group.types.includes(t));
+      return g ? g.key : 'other';
+    };
+    const sportMeta = key => SPORT_GROUPS.find(g => g.key === key);
+    const esc = v => String(v ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    const isMetric = () => getDistanceUnit() === 'km';
+    const fmtNum = (n, d = 0) => (n || 0).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+    const fmtDate = d => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const monthsElapsed = () => (new Date().getFullYear() === RECAP_YEAR ? new Date().getMonth() + 1 : 12);
+    const weekOfYear = d => Math.min(52, Math.floor((new Date(d) - new Date(RECAP_YEAR, 0, 1)) / (7 * 86400000)));
+    const hoursOf = sec => (sec || 0) / 3600;
+
+    function fmtClock(sec) {
+      if (!isFinite(sec) || sec <= 0) return '--';
+      sec = Math.round(sec);
+      const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+      return h ? `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}` : `${m}:${String(s).padStart(2, '0')}`;
+    }
+    function fmtHours(sec) { const h = hoursOf(sec); return `${fmtNum(h, h >= 10 ? 0 : 1)} h`; }
+    function distValue(m, sport) {
+      if (sport === 'swim') return isMetric() ? { v: m, u: 'm', d: 0 } : { v: m * 1.09361, u: 'yd', d: 0 };
+      const v = getDistanceValue(m);
+      return { v, u: getDistanceUnit(), d: v >= 100 ? 0 : 1 };
+    }
+    function fmtDist(m, sport) { const { v, u, d } = distValue(m, sport); return `${fmtNum(v, d)} ${u}`; }
+    function fmtElev(m) { return `${fmtNum(getElevationValue(m))} ${getElevationUnit()}`; }
+    function paceText(sec, m, sport) {
+      if (!m || !sec) return '--';
+      if (sport === 'swim') {
+        const per = isMetric() ? 100 : 91.44;
+        return `${fmtClock(sec / (m / per))} /100${isMetric() ? 'm' : 'yd'}`;
+      }
+      if (sport === 'ride') return `${fmtNum(getSpeedValue(m / sec), 1)} ${getSpeedUnit()}`;
+      return `${fmtClock(sec / getDistanceValue(m))} /${getDistanceUnit()}`;
+    }
+    // Numeric pace for charts: seconds per unit (run/walk), seconds per 100 (swim), speed (ride).
+    function paceValue(sec, m, sport) {
+      if (!m || !sec) return null;
+      if (sport === 'swim') return sec / (m / (isMetric() ? 100 : 91.44));
+      if (sport === 'ride') return getSpeedValue(m / sec);
+      return sec / getDistanceValue(m);
+    }
+
+    // ---------- Sport picker ----------
+
+    function summariseSports(acts) {
+      return SPORT_GROUPS.map(g => {
+        const list = acts.filter(a => sportOf(a) === g.key);
+        return { ...g, count: list.length, time: list.reduce((s, a) => s + (a.moving_time || 0), 0), metres: list.reduce((s, a) => s + (a.distance || 0), 0) };
+      }).filter(s => s.count > 0).sort((a, b) => b.time - a.time);
+    }
+
+    function showSportPicker(acts) {
+      yearActivities = acts;
+      const sports = summariseSports(acts);
+      if (sports.length <= 1) { applySports(sports.map(s => s.key)); return; }
+      let saved = null;
+      try { saved = JSON.parse(localStorage.getItem('recap_sports') || 'null'); } catch (e) { /* storage blocked */ }
+      const chosen = new Set((Array.isArray(saved) ? saved : DEFAULT_SPORTS).filter(k => sports.some(s => s.key === k)));
+      if (!chosen.size) chosen.add(sports[0].key);
+
+      hideLoading();
+      const el = document.createElement('div');
+      el.className = 'sport-picker';
+      el.setAttribute('role', 'dialog');
+      el.setAttribute('aria-labelledby', 'pickerTitle');
+      el.innerHTML = `
+        <div class="picker-inner">
+          <div class="label">recap.fit · ${RECAP_YEAR}</div>
+          <h2 id="pickerTitle">What goes in your recap?</h2>
+          <p class="picker-sub">We found ${fmtNum(acts.length)} activities. Pick the sports to include. Each one gets its own chapter with the full breakdown.</p>
+          <div class="picker-list">
+            ${sports.map(s => `
+              <button type="button" class="picker-sport" data-key="${s.key}" aria-pressed="${chosen.has(s.key)}">
+                <span class="picker-swatch" style="background:${s.color}"></span>
+                <span class="picker-name">${s.label}</span>
+                <span class="picker-meta">${fmtNum(s.count)} ${s.noun} · ${fmtHours(s.time)}${s.metres > 0 ? ` · ${s.key === 'swim' ? fmtDist(s.metres, 'swim') : fmtDist(s.metres, s.key)}` : ''}</span>
+                <span class="picker-check" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M3 7.5l2.8 2.8L11 4.5" fill="none" stroke="#140600" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              </button>`).join('')}
+          </div>
+          <button type="button" class="picker-go" id="pickerGo">Build my recap</button>
+        </div>`;
+      document.body.appendChild(el);
+      const go = el.querySelector('#pickerGo');
+      const sync = () => { go.disabled = !el.querySelector('[aria-pressed="true"]'); };
+      el.querySelectorAll('.picker-sport').forEach(btn => btn.addEventListener('click', () => {
+        btn.setAttribute('aria-pressed', btn.getAttribute('aria-pressed') !== 'true');
+        sync();
+      }));
+      go.addEventListener('click', () => {
+        const keys = [...el.querySelectorAll('[aria-pressed="true"]')].map(b => b.dataset.key);
+        try { localStorage.setItem('recap_sports', JSON.stringify(keys)); } catch (e) { /* storage blocked */ }
+        el.remove();
+        applySports(keys);
+      });
+      sync();
+    }
+
+    function applySports(keys) {
+      selectedSports = SPORT_GROUPS.map(g => g.key).filter(k => keys.includes(k));
+      activitiesData = yearActivities.filter(a => selectedSports.includes(sportOf(a)));
+      processAndDisplayData();
+    }
+
+    // ---------- Chart and layout helpers (inline SVG, drawn to one scale) ----------
+
+    function barChart(bars, { labels = [], colors = ['#FF7A45'], height = 120, highlight = -1, highlightLabel = '', aria = '' } = {}) {
+      const W = 320, H = height, top = highlightLabel ? 18 : 6, bottom = labels.length ? 16 : 2, n = bars.length;
+      const stacks = bars.map(b => (Array.isArray(b) ? b : [b]));
+      const max = Math.max(...stacks.map(s => s.reduce((a, v) => a + (v || 0), 0)), 1e-9);
+      const slot = W / n, bw = Math.max(1, slot * (n > 30 ? 0.72 : 0.62));
+      let out = `<rect x="0" y="${H - bottom}" width="${W}" height="0.6" fill="#3A3430"/>`;
+      stacks.forEach((s, i) => {
+        let y = H - bottom;
+        const x = i * slot + (slot - bw) / 2, dim = highlight >= 0 && i !== highlight ? ' opacity="0.5"' : '';
+        s.forEach((v, j) => {
+          if (!v) return;
+          const h = (v / max) * (H - top - bottom);
+          y -= h;
+          out += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="1.2" fill="${colors[j % colors.length]}"${dim}/>`;
+        });
+        if (i === highlight && highlightLabel) {
+          const anchor = i < n * 0.2 ? 'start' : i > n * 0.8 ? 'end' : 'middle';
+          out += `<text x="${(x + bw / 2).toFixed(1)}" y="${(y - 5).toFixed(1)}" text-anchor="${anchor}" font-size="9.5" font-family="DM Mono, monospace" fill="#F4EFEA">${esc(highlightLabel)}</text>`;
+        }
+      });
+      if (labels.length) {
+        const every = n <= 12 ? 1 : Math.ceil(n / 6);
+        labels.forEach((l, i) => {
+          if (i % every) return;
+          out += `<text x="${(i * slot + slot / 2).toFixed(1)}" y="${H - 3}" text-anchor="middle" font-size="9" font-family="DM Mono, monospace" fill="#A8A098">${esc(l)}</text>`;
+        });
+      }
+      return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(aria)}">${out}</svg>`;
+    }
+
+    function lineChart(values, { labels = [], fmt = v => v, invert = false, height = 120, color = '#FF7A45', aria = '' } = {}) {
+      const pts = values.map((v, i) => (v == null ? null : [i, v])).filter(Boolean);
+      if (pts.length < 2) return '<p class="ds-note">Not enough months with data yet.</p>';
+      const W = 320, H = height, padX = 10, top = 20, bottom = 16;
+      const vs = pts.map(p => p[1]);
+      let min = Math.min(...vs), max = Math.max(...vs);
+      const pad = (max - min) * 0.18 || Math.abs(max) * 0.05 || 1;
+      min -= pad; max += pad;
+      const x = i => padX + (i * (W - 2 * padX)) / Math.max(1, values.length - 1);
+      const y = v => { const t = (v - min) / (max - min); return top + (invert ? t : 1 - t) * (H - top - bottom); };
+      const line = pts.map(([i, v]) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+      let out = `<polyline points="${line}" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+      pts.forEach(([i, v]) => { out += `<circle cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="2.4" fill="${color}"/>`; });
+      const [fi, fv] = pts[0], [li, lv] = pts[pts.length - 1];
+      out += `<text x="${x(fi).toFixed(1)}" y="${(y(fv) - 7).toFixed(1)}" font-size="9.5" font-family="DM Mono, monospace" fill="#A8A098">${esc(fmt(fv))}</text>`;
+      out += `<text x="${x(li).toFixed(1)}" y="${(y(lv) - 7).toFixed(1)}" text-anchor="end" font-size="9.5" font-family="DM Mono, monospace" fill="#F4EFEA">${esc(fmt(lv))}</text>`;
+      labels.forEach((l, i) => { out += `<text x="${x(i).toFixed(1)}" y="${H - 3}" text-anchor="middle" font-size="9" font-family="DM Mono, monospace" fill="#A8A098">${esc(l)}</text>`; });
+      return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(aria)}">${out}</svg>`;
+    }
+
+    const section = (title, inner, note = '') => inner ? `<section class="ds-section"><h3>${title}</h3>${inner}${note ? `<p class="ds-note">${note}</p>` : ''}</section>` : '';
+    const statGrid = items => {
+      const shown = items.filter(it => it && it[1] != null && it[1] !== '--');
+      return shown.length ? `<div class="ds-grid">${shown.map(([label, value, sub]) => `<div class="ds-stat"><span>${label}</span><b>${value}</b>${sub ? `<em>${sub}</em>` : ''}</div>`).join('')}</div>` : '';
+    };
+    function table(cols, rows) {
+      if (!rows.length) return '';
+      return `<div class="ds-table-wrap"><table class="ds-table"><thead><tr>${cols.map(c => `<th${c.num ? ' class="num"' : ''}>${c.h}</th>`).join('')}</tr></thead><tbody>${
+        rows.map(r => `<tr>${r.map((v, i) => `<td class="${cols[i].num ? 'num' : ''}${cols[i].name ? ' name' : ''}">${v}</td>`).join('')}</tr>`).join('')
+      }</tbody></table></div>`;
+    }
+    const legend = keys => `<div class="ds-legend">${keys.map(k => `<span><i style="background:${sportMeta(k).color}"></i>${sportMeta(k).short}</span>`).join('')}</div>`;
+
+    // ---------- Per-sport stats ----------
+
+    function sportStats(key, acts = activitiesData) {
+      const list = acts.filter(a => sportOf(a) === key);
+      if (!list.length) return null;
+      const sum = f => list.reduce((s, a) => s + (f(a) || 0), 0);
+      const weighted = f => { let w = 0, t = 0; list.forEach(a => { const v = f(a); if (v) { w += v * a.moving_time; t += a.moving_time; } }); return t ? w / t : null; };
+      const months = Array.from({ length: 12 }, () => ({ dist: 0, time: 0, n: 0, elev: 0, kj: 0, hrW: 0, hrT: 0 }));
+      const weeks = Array(53).fill(0);
+      list.forEach(a => {
+        const m = months[new Date(a.start_date).getMonth()];
+        m.dist += a.distance || 0; m.time += a.moving_time || 0; m.n++; m.elev += a.total_elevation_gain || 0; m.kj += a.kilojoules || 0;
+        if (a.average_heartrate) { m.hrW += a.average_heartrate * a.moving_time; m.hrT += a.moving_time; }
+        weeks[weekOfYear(a.start_date)] += a.distance || 0;
+      });
+      const withHr = list.filter(a => a.average_heartrate && a.distance);
+      const beats = withHr.reduce((s, a) => s + a.average_heartrate * a.moving_time / 60, 0);
+      const quarter = (from, to) => {
+        const q = list.filter(a => { const m = new Date(a.start_date).getMonth(); return m >= from && m <= to && !a.workout_type; });
+        const d = q.reduce((s, a) => s + (a.distance || 0), 0), t = q.reduce((s, a) => s + (a.moving_time || 0), 0);
+        const hq = q.filter(a => a.average_heartrate && a.distance);
+        const b = hq.reduce((s, a) => s + a.average_heartrate * a.moving_time / 60, 0);
+        return { pace: paceValue(t, d, key), d, t, mpb: b ? hq.reduce((s, a) => s + a.distance, 0) / b : null };
+      };
+      const last = monthsElapsed() - 1;
+      const power = list.filter(a => a.device_watts && a.average_watts);
+      return {
+        key, list, months, weeks,
+        count: list.length, dist: sum(a => a.distance), time: sum(a => a.moving_time), elev: sum(a => a.total_elevation_gain),
+        kj: sum(a => a.kilojoules), avgHr: weighted(a => a.average_heartrate),
+        maxHr: Math.max(0, ...list.map(a => a.max_heartrate || 0)) || null,
+        cadence: weighted(a => a.average_cadence),
+        metresPerBeat: beats ? withHr.reduce((s, a) => s + a.distance, 0) / beats : null,
+        early: quarter(0, 2), recent: quarter(Math.max(3, last - 2), last),
+        races: list.filter(a => (key === 'run' && a.workout_type === 1) || (key === 'ride' && a.workout_type === 11)).sort((a, b) => new Date(a.start_date) - new Date(b.start_date)),
+        longest: [...list].sort((a, b) => (b.distance || 0) - (a.distance || 0)).slice(0, 5),
+        climbs: [...list].sort((a, b) => (b.total_elevation_gain || 0) - (a.total_elevation_gain || 0)).slice(0, 5),
+        indoor: list.filter(a => a.trainer || /Virtual/.test(a.sport_type || a.type || '')),
+        openWater: list.filter(a => a.map && a.map.summary_polyline),
+        power, avgWatts: power.length ? power.reduce((s, a) => s + a.average_watts * a.moving_time, 0) / power.reduce((s, a) => s + a.moving_time, 0) : null,
+        bestNp: power.filter(a => a.weighted_average_watts && a.moving_time >= 3600).sort((a, b) => b.weighted_average_watts - a.weighted_average_watts)[0] || null
+      };
+    }
+
+    const monthLabels = () => MONTHS.slice(0, monthsElapsed()).map(m => m[0]);
+    const BUCKETS = {
+      run: { km: [5, 10, 21.1, 42.2], mi: [3, 6, 13.1, 26.2], names: ['<5K', '5–10K', '10K–HM', 'HM–M', 'M+'], namesMi: ['<3', '3–6', '6–13.1', '13.1–26.2', '26.2+'] },
+      ride: { km: [50, 100, 160], mi: [30, 60, 100], names: ['<50', '50–100', '100–160', '160+'], namesMi: ['<30', '30–60', '60–100', '100+'] },
+      swim: { km: [1000, 2000, 3000], mi: [1000, 2000, 3000], names: ['<1000', '1–2K', '2–3K', '3K+'], namesMi: ['<1000', '1–2K', '2–3K', '3K+'] },
+      walk: { km: [5, 10, 20], mi: [3, 6, 12], names: ['<5', '5–10', '10–20', '20+'], namesMi: ['<3', '3–6', '6–12', '12+'] }
+    };
+    function distanceMix(s) {
+      const b = BUCKETS[s.key];
+      if (!b) return '';
+      const cuts = isMetric() ? b.km : b.mi, names = isMetric() ? b.names : b.namesMi;
+      const counts = Array(cuts.length + 1).fill(0);
+      s.list.forEach(a => {
+        const v = distValue(a.distance || 0, s.key).v;
+        let i = cuts.findIndex(c => v < c);
+        counts[i === -1 ? cuts.length : i]++;
+      });
+      const top = counts.indexOf(Math.max(...counts));
+      return barChart(counts, { labels: names, colors: [sportMeta(s.key).color], height: 110, highlight: top, highlightLabel: `${counts[top]} ${sportMeta(s.key).noun}`, aria: `Number of ${sportMeta(s.key).noun} by distance` });
+    }
+    const activityRow = (a, s, extra = []) => [fmtDate(a.start_date), esc(a.name || sportMeta(s).short), fmtDist(a.distance || 0, s), fmtClock(a.moving_time), ...extra];
+
+    // ---------- Sport chapter cards ----------
+
+    function sportStory(s) {
+      const unit = s.key === 'swim' ? (isMetric() ? '/100m' : '/100yd') : s.key === 'ride' ? getSpeedUnit() : `/${getDistanceUnit()}`;
+      if ((s.key === 'run' || s.key === 'swim') && s.early.pace && s.recent.pace && monthsElapsed() >= 6) {
+        const faster = s.recent.pace < s.early.pace;
+        return `Your average pace went from <em>${fmtClock(s.early.pace)}</em> to <em>${fmtClock(s.recent.pace)} ${unit}</em> ${faster ? 'since the start of the year' : 'as the year went on'}.`;
+      }
+      if (s.key === 'ride') return `You climbed <em>${fmtElev(s.elev)}</em> on the bike. That's Alpe d'Huez <em>${fmtNum(s.elev / 1071)} times</em>.`;
+      if (s.key === 'walk') return `<em>${fmtHours(s.time)}</em> on foot, outside of training.`;
+      return `<em>${fmtNum(s.count)} ${sportMeta(s.key).noun}</em> and <em>${fmtHours(s.time)}</em> of work.`;
+    }
+
+    function sportHero(s) {
+      const meta = sportMeta(s.key), last = monthsElapsed();
+      const heroDist = s.key === 'swim' ? { v: getDistanceValue(s.dist), u: getDistanceUnit() } : distValue(s.dist, s.key);
+      const isOther = s.key === 'other' || !s.dist;
+      const big = isOther ? { v: hoursOf(s.time), u: 'hours' } : heroDist;
+      const bars = s.months.map((m, i) => (i < last ? (isOther ? m.time : m.dist) : 0));
+      const best = bars.indexOf(Math.max(...bars));
+      const keyMetric = s.key === 'ride' ? [paceText(s.time, s.dist, 'ride'), 'avg speed']
+        : s.key === 'other' ? [fmtNum(s.count), 'sessions']
+        : [paceText(s.time, s.dist, s.key).split(' ')[0], `avg pace ${paceText(s.time, s.dist, s.key).split(' ')[1] || ''}`];
+      return `
+        <div class="stat-content sport-hero">
+          <div class="label">${meta.label} · ${RECAP_YEAR}</div>
+          <div class="stat-huge"><span class="counter" data-target="${Math.round(big.v)}">0</span><span class="stat-unit">${big.u}</span></div>
+          <div class="context">${sportStory(s)}</div>
+          <div class="sport-months">${barChart(bars, { labels: MONTHS.map(m => m[0]), colors: [meta.color], height: 96, highlight: best, highlightLabel: MONTHS[best], aria: `${meta.label} by month, biggest in ${MONTHS[best]}` })}</div>
+          <div class="sport-trio">
+            <div><b>${fmtNum(s.count)}</b><span>${meta.noun}</span></div>
+            <div><b>${fmtNum(hoursOf(s.time))}</b><span>hours</span></div>
+            <div><b>${keyMetric[0]}</b><span>${keyMetric[1]}</span></div>
+          </div>
+        </div>`;
+    }
+
+    function sportDetails(s) {
+      const meta = sportMeta(s.key), last = monthsElapsed(), k = s.key;
+      const longUnit = isMetric() ? 30000 : 28968; // 30 km or 18 mi
+      const monthRows = s.months.slice(0, last).map((m, i) => m.n ? [
+        MONTHS[i], fmtDist(m.dist, k), fmtNum(m.n), k === 'other' ? fmtHours(m.time) : paceText(m.time, m.dist, k),
+        ...(k === 'ride' ? [fmtElev(m.elev), m.kj ? fmtNum(m.kj) : '--'] : [m.hrT ? fmtNum(m.hrW / m.hrT) : '--'])
+      ] : null).filter(Boolean);
+      const monthCols = [{ h: 'Month' }, { h: 'Distance', num: true }, { h: meta.noun[0].toUpperCase() + meta.noun.slice(1), num: true }, { h: k === 'ride' ? 'Speed' : k === 'other' ? 'Time' : 'Pace', num: true },
+        ...(k === 'ride' ? [{ h: 'Climb', num: true }, { h: 'kJ', num: true }] : [{ h: 'Avg HR', num: true }])];
+      const paceSeries = s.months.slice(0, last).map(m => paceValue(m.time, m.dist, k));
+      const best = s.weeks.indexOf(Math.max(...s.weeks));
+      const weekStart = new Date(RECAP_YEAR, 0, 1 + best * 7);
+
+      const numbers = statGrid([
+        [meta.noun[0].toUpperCase() + meta.noun.slice(1), fmtNum(s.count)],
+        s.dist ? ['Distance', fmtDist(s.dist, k)] : null,
+        ['Moving time', fmtHours(s.time)],
+        s.dist ? [k === 'ride' ? 'Avg speed' : 'Avg pace', paceText(s.time, s.dist, k)] : null,
+        s.dist ? [`Avg ${meta.noun.slice(0, -1)}`, fmtDist(s.dist / s.count, k)] : null,
+        k !== 'swim' && s.elev ? ['Elevation', fmtElev(s.elev), k === 'ride' && s.dist ? `${fmtNum(getElevationValue(s.elev) / getDistanceValue(s.dist))} ${getElevationUnit()}/${getDistanceUnit()}` : ''] : null,
+        s.avgHr ? ['Avg heart rate', `${fmtNum(s.avgHr)} bpm`] : null,
+        s.maxHr ? ['Max heart rate', `${fmtNum(s.maxHr)} bpm`] : null,
+        s.cadence ? ['Avg cadence', k === 'run' ? `${fmtNum(s.cadence * 2)} spm` : `${fmtNum(s.cadence)} rpm`] : null,
+        k === 'run' ? ['Long runs', fmtNum(s.list.filter(a => a.distance >= longUnit).length), isMetric() ? '30 km or more' : '18 mi or more'] : null,
+        k === 'ride' ? ['Centuries', fmtNum(s.list.filter(a => a.distance >= 160934).length), `${fmtNum(s.list.filter(a => a.distance >= 100000).length)} metric (100 km+)`] : null,
+        k === 'ride' && s.indoor.length ? ['Indoor', `${fmtNum(s.indoor.length)} rides`, fmtHours(s.indoor.reduce((t, a) => t + a.moving_time, 0))] : null,
+        k === 'swim' ? ['Open water', `${fmtNum(s.openWater.length)} swims`, `${fmtNum(s.count - s.openWater.length)} in the pool`] : null,
+        s.races.length ? ['Races', fmtNum(s.races.length)] : null
+      ]);
+
+      const efficiency = k === 'run' && s.metresPerBeat ? section('Efficiency', statGrid([
+        ['Distance per heartbeat', `${fmtNum(s.metresPerBeat, 2)} m`, s.early.mpb && s.recent.mpb ? `${s.recent.mpb >= s.early.mpb ? 'Up' : 'Down'} from ${fmtNum(s.early.mpb, 2)} m in Jan–Mar` : '']
+      ]), 'More distance per heartbeat means more speed for the same effort. It rises as your aerobic fitness improves.') : '';
+
+      const power = k === 'ride' && s.power.length ? section('Power', statGrid([
+        ['Rides with power', fmtNum(s.power.length)],
+        ['Avg power', `${fmtNum(s.avgWatts)} W`],
+        s.bestNp ? ['Best weighted power', `${fmtNum(s.bestNp.weighted_average_watts)} W`, `${esc(s.bestNp.name || 'Ride')}, ${fmtDate(s.bestNp.start_date)} (1 h+)`] : null,
+        ['Total work', `${fmtNum(s.kj)} kJ`, `About ${fmtNum(s.kj)} kcal burned`]
+      ]), 'Weighted power is Strava’s estimate of what a ride cost you, smoothing out coasting and surges.') : '';
+
+      return `
+        <div class="ds-head">${meta.label}, in full</div>
+        ${section('The numbers', numbers)}
+        ${section('Month by month', table(monthCols, monthRows))}
+        ${s.dist && k !== 'other' ? section(k === 'ride' ? 'Speed by month' : 'Pace by month', lineChart(paceSeries, { labels: monthLabels(), fmt: v => (k === 'ride' ? fmtNum(v, 1) : fmtClock(v)), invert: k !== 'ride', color: meta.color, aria: `${meta.label} ${k === 'ride' ? 'speed' : 'pace'} by month` }), k === 'ride' ? 'Races are left out of the trend.' : 'Higher on the chart is faster. Races are left out of the trend.') : ''}
+        ${s.dist ? section('Every week', barChart(s.weeks.slice(0, weekOfYear(new Date()) + 1), { colors: [meta.color], height: 110, highlight: best, highlightLabel: `${fmtDist(s.weeks[best], k)} · ${fmtDate(weekStart)}`, aria: `Weekly ${meta.label} distance` }), `Biggest week: ${fmtDist(s.weeks[best], k)}, week of ${fmtDate(weekStart)}.`) : ''}
+        ${section('How far you go', distanceMix(s))}
+        ${power}
+        ${efficiency}
+        ${s.races.length ? section('Races', table([{ h: 'Date' }, { h: 'Race', name: true }, { h: 'Dist', num: true }, { h: 'Time', num: true }, { h: k === 'ride' ? 'Speed' : 'Pace', num: true }],
+          s.races.map(a => activityRow(a, k, [paceText(a.moving_time, a.distance, k)])))) : ''}
+        ${s.dist ? section(`Longest ${meta.noun}`, table([{ h: 'Date' }, { h: 'Name', name: true }, { h: 'Dist', num: true }, { h: 'Time', num: true }, { h: k === 'ride' ? 'Speed' : 'Pace', num: true }],
+          s.longest.map(a => activityRow(a, k, [paceText(a.moving_time, a.distance, k)])))) : ''}
+        ${k === 'ride' ? section('Biggest climbs', table([{ h: 'Date' }, { h: 'Name', name: true }, { h: 'Climb', num: true }, { h: 'Dist', num: true }],
+          s.climbs.filter(a => a.total_elevation_gain).map(a => [fmtDate(a.start_date), esc(a.name || 'Ride'), fmtElev(a.total_elevation_gain), fmtDist(a.distance, 'ride')]))) : ''}
+        ${k === 'other' ? section('By type', table([{ h: 'Type' }, { h: 'Sessions', num: true }, { h: 'Time', num: true }],
+          Object.entries(s.list.reduce((m, a) => { const t = a.sport_type || a.type || 'Other'; (m[t] = m[t] || { n: 0, t: 0 }); m[t].n++; m[t].t += a.moving_time || 0; return m; }, {}))
+            .sort((a, b) => b[1].t - a[1].t).map(([t, v]) => [esc(t.replace(/([a-z])([A-Z])/g, '$1 $2')), fmtNum(v.n), fmtHours(v.t)]))) : ''}`;
+    }
+
+    // Ironman check: longest swim, ride and run against full and half distances.
+    const IRONMAN = { swim: 3800, ride: 180000, run: 42195 };
+    const HALF = { swim: 1900, ride: 90000, run: 21097 };
+    function triHero(stats) {
+      const rows = ['swim', 'ride', 'run'].map(k => {
+        const longest = stats[k].longest[0], have = longest ? longest.distance : 0, pct = Math.min(1, have / IRONMAN[k]);
+        return { k, have, pct, done: have >= IRONMAN[k] * 0.995 };
+      });
+      const all = rows.every(r => r.done);
+      const fmt = (m, k) => (k === 'swim' ? `${fmtNum(getDistanceValue(m), 1)} ${getDistanceUnit()}` : fmtDist(m, k));
+      return `
+        <div class="stat-content tri-hero">
+          <div class="label">Ironman check · ${RECAP_YEAR}</div>
+          <div class="tri-title">${all ? 'You covered every Ironman distance this year.' : 'Your longest swim, ride and run, against Ironman distances.'}</div>
+          <div class="tri-rows">
+            ${rows.map(r => `
+              <div class="tri-row">
+                <div class="tri-row-head"><span>${sportMeta(r.k).short}</span><span><b>${fmt(r.have, r.k)}</b> / ${fmt(IRONMAN[r.k], r.k)}</span></div>
+                <div class="tri-bar"><i style="width:${(r.pct * 100).toFixed(1)}%;background:${sportMeta(r.k).color}"></i></div>
+                <div class="tri-row-foot">${r.done ? 'Done' : `${fmtNum(r.pct * 100)}% of the way`}</div>
+              </div>`).join('')}
+          </div>
+        </div>`;
+    }
+    function triDetails(stats) {
+      const keys = ['swim', 'ride', 'run'], total = keys.reduce((t, k) => t + stats[k].time, 0);
+      const weeks = Array.from({ length: weekOfYear(new Date()) + 1 }, () => [0, 0, 0]);
+      keys.forEach((k, j) => stats[k].list.forEach(a => { const w = weekOfYear(a.start_date); if (weeks[w]) weeks[w][j] += hoursOf(a.moving_time); }));
+      const weekly = weeks.map(w => w.reduce((a, b) => a + b, 0));
+      const peak = weekly.indexOf(Math.max(...weekly));
+      const block = weekly.map((_, i) => (i >= 3 ? weekly.slice(i - 3, i + 1).reduce((a, b) => a + b, 0) / 4 : 0));
+      const peakBlock = block.indexOf(Math.max(...block));
+      return `
+        <div class="ds-head">Swim, bike, run</div>
+        ${section('Half distance (70.3)', table([{ h: 'Sport' }, { h: 'Longest', num: true }, { h: '70.3', num: true }, { h: '', num: true }],
+          keys.map(k => { const have = stats[k].longest[0] ? stats[k].longest[0].distance : 0; return [sportMeta(k).short, fmtDist(have, k), fmtDist(HALF[k], k), have >= HALF[k] * 0.995 ? 'Done' : `${fmtNum(Math.min(1, have / HALF[k]) * 100)}%`]; })))}
+        ${section('Where the hours went', table([{ h: 'Sport' }, { h: 'Sessions', num: true }, { h: 'Hours', num: true }, { h: 'Share', num: true }, { h: 'Distance', num: true }],
+          keys.map(k => [sportMeta(k).short, fmtNum(stats[k].count), fmtNum(hoursOf(stats[k].time), 1), `${fmtNum(stats[k].time / total * 100)}%`, fmtDist(stats[k].dist, k)])))}
+        ${section('Weekly hours', legend(keys) + barChart(weeks, { colors: keys.map(k => sportMeta(k).color), height: 130, highlight: peak, highlightLabel: `${fmtNum(weekly[peak], 1)} h`, aria: 'Weekly training hours by sport' }),
+          `Biggest week: ${fmtNum(weekly[peak], 1)} h (week of ${fmtDate(new Date(RECAP_YEAR, 0, 1 + peak * 7))}). Peak 4-week block: ${fmtNum(block[peakBlock], 1)} h a week, ending ${fmtDate(new Date(RECAP_YEAR, 0, 7 + peakBlock * 7))}. Year average: ${fmtNum(weekly.reduce((a, b) => a + b, 0) / weekly.length, 1)} h a week.`)}`;
+    }
+
+    // ---------- Cards with a detail sheet ----------
+
+    function onCardScroll(e) {
+      const deep = e.currentTarget.scrollTop > 40;
+      document.body.classList.toggle('in-details', deep);
+      if (deep && !document.body.classList.contains('held')) {
+        document.body.classList.add('held');
+        clearTimeout(autoAdvanceTimer);
+      }
+    }
+
+    function setCardDetails(card, html) {
+      let scroller = card.querySelector(':scope > .card-scroll');
+      if (!scroller) {
+        scroller = document.createElement('div');
+        scroller.className = 'card-scroll';
+        while (card.firstChild) scroller.appendChild(card.firstChild);
+        card.appendChild(scroller);
+        scroller.addEventListener('scroll', onCardScroll, { passive: true });
+      }
+      const hero = scroller.querySelector('.hero-section');
+      if (hero && !hero.querySelector('.more-hint')) hero.insertAdjacentHTML('beforeend', '<div class="more-hint" aria-hidden="true">Details <svg width="10" height="10" viewBox="0 0 10 10"><path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>');
+      let sheet = scroller.querySelector('.detail-sheet');
+      if (!sheet) { sheet = document.createElement('div'); sheet.className = 'detail-sheet'; scroller.appendChild(sheet); }
+      sheet.innerHTML = html;
+      card.classList.add('has-details');
+    }
+
+    function buildSportCards() {
+      document.querySelectorAll('.card-sport').forEach(c => c.remove());
+      const anchor = document.querySelector('.card-longest');
+      const stats = {};
+      selectedSports.forEach(k => { stats[k] = sportStats(k); });
+      selectedSports.filter(k => stats[k]).forEach(k => {
+        const card = document.createElement('div');
+        card.className = `story-card card-sport card-sport-${k}`;
+        card.innerHTML = `<div class="hero-section">${sportHero(stats[k])}</div>`;
+        anchor.parentNode.insertBefore(card, anchor);
+        setCardDetails(card, sportDetails(stats[k]));
+      });
+      if (stats.swim && stats.ride && stats.run) {
+        const card = document.createElement('div');
+        card.className = 'story-card card-sport card-tri';
+        card.innerHTML = `<div class="hero-section">${triHero(stats)}</div>`;
+        anchor.parentNode.insertBefore(card, anchor);
+        setCardDetails(card, triDetails(stats));
+      }
+    }
+
+    // Detail sheets for the shared cards (all selected sports together).
+    function buildSharedDetails(stats) {
+      const acts = activitiesData, last = monthsElapsed();
+      const keys = selectedSports.filter(k => acts.some(a => sportOf(a) === k));
+      const per = Object.fromEntries(keys.map(k => [k, sportStats(k)]));
+      const colors = keys.map(k => sportMeta(k).color);
+      const totalTime = acts.reduce((t, a) => t + (a.moving_time || 0), 0);
+      const weeksSoFar = Math.max(1, daysElapsedInRecapYear() / 7);
+      const sportCell = a => `<span class="ds-dot" style="background:${sportMeta(sportOf(a)).color}"></span>${sportMeta(sportOf(a)).short}`;
+
+      // Distance
+      const monthlyHours = MONTHS.slice(0, last).map((_, i) => keys.map(k => hoursOf(per[k].months[i].time)));
+      setCardDetails(document.querySelector('.card-distance'), `
+        <div class="ds-head">Your year, by sport</div>
+        ${section('The numbers', statGrid([
+          ['Sessions', fmtNum(acts.length)], ['Moving time', fmtHours(totalTime)],
+          ['Hours a week', fmtNum(hoursOf(totalTime) / weeksSoFar, 1), 'averaged over the year so far'],
+          ['Active days', fmtNum(new Set(acts.map(a => new Date(a.start_date).toDateString())).size)]
+        ]))}
+        ${section('By sport', table([{ h: 'Sport' }, { h: 'Sessions', num: true }, { h: 'Distance', num: true }, { h: 'Time', num: true }, { h: 'Climb', num: true }],
+          keys.map(k => [sportMeta(k).short, fmtNum(per[k].count), per[k].dist ? fmtDist(per[k].dist, k) : '--', fmtHours(per[k].time), k === 'swim' ? '--' : fmtElev(per[k].elev)])))}
+        ${section('Hours by month', legend(keys) + barChart(monthlyHours, { labels: MONTHS.slice(0, last).map(m => m[0]), colors, height: 130, aria: 'Training hours by month and sport' }))}`);
+
+      // Longest day
+      const byDist = [...acts].sort((a, b) => (b.distance || 0) - (a.distance || 0)).slice(0, 8);
+      const byTime = [...acts].sort((a, b) => (b.moving_time || 0) - (a.moving_time || 0)).slice(0, 8);
+      setCardDetails(document.querySelector('.card-longest'), `
+        <div class="ds-head">Your biggest days</div>
+        ${section('Longest by distance', table([{ h: 'Sport' }, { h: 'Date' }, { h: 'Name', name: true }, { h: 'Dist', num: true }],
+          byDist.map(a => [sportCell(a), fmtDate(a.start_date), esc(a.name || ''), fmtDist(a.distance || 0, sportOf(a))])))}
+        ${section('Longest by time', table([{ h: 'Sport' }, { h: 'Date' }, { h: 'Name', name: true }, { h: 'Time', num: true }],
+          byTime.map(a => [sportCell(a), fmtDate(a.start_date), esc(a.name || ''), fmtClock(a.moving_time)])))}`);
+
+      // Elevation
+      const climbs = [...acts].filter(a => a.total_elevation_gain).sort((a, b) => b.total_elevation_gain - a.total_elevation_gain).slice(0, 6);
+      const elevMonths = MONTHS.slice(0, last).map((_, i) => keys.map(k => getElevationValue(per[k].months[i].elev)));
+      setCardDetails(document.querySelector('.card-elevation'), `
+        <div class="ds-head">Every metre up</div>
+        ${section('Climbing by month', legend(keys) + barChart(elevMonths, { labels: MONTHS.slice(0, last).map(m => m[0]), colors, height: 120, aria: 'Elevation gain by month and sport' }))}
+        ${section('Biggest climbs', table([{ h: 'Sport' }, { h: 'Date' }, { h: 'Name', name: true }, { h: 'Climb', num: true }],
+          climbs.map(a => [sportCell(a), fmtDate(a.start_date), esc(a.name || ''), fmtElev(a.total_elevation_gain)])))}
+        ${section('By sport', table([{ h: 'Sport' }, { h: 'Climb', num: true }, { h: 'Per distance', num: true }],
+          keys.filter(k => per[k].elev && per[k].dist && k !== 'swim').map(k => [sportMeta(k).short, fmtElev(per[k].elev), `${fmtNum(getElevationValue(per[k].elev) / getDistanceValue(per[k].dist))} ${getElevationUnit()}/${getDistanceUnit()}`])))}`);
+
+      // Consistency (streak card)
+      const dayKeys = [...new Set(acts.map(a => { const d = new Date(a.start_date); return Math.floor(new Date(d.getFullYear(), d.getMonth(), d.getDate()) / 86400000); }))].sort((a, b) => a - b);
+      let best = { len: 0 }, run = { start: dayKeys[0], len: 0 };
+      dayKeys.forEach((d, i) => {
+        run = i && d === dayKeys[i - 1] + 1 ? { start: run.start, len: run.len + 1 } : { start: d, len: 1 };
+        if (run.len > best.len) best = { ...run };
+      });
+      const dow = Array.from({ length: 7 }, () => 0), dowHours = Array(7).fill(0), hours = Array(24).fill(0);
+      acts.forEach(a => { const d = new Date(a.start_date), i = (d.getDay() + 6) % 7; dow[i]++; dowHours[i] += hoursOf(a.moving_time); hours[d.getHours()]++; });
+      const weeks = Array.from({ length: weekOfYear(new Date()) + 1 }, () => keys.map(() => 0));
+      acts.forEach(a => { const w = weeks[weekOfYear(a.start_date)]; if (w) w[keys.indexOf(sportOf(a))] += hoursOf(a.moving_time); });
+      const weekly = weeks.map(w => w.reduce((x, y) => x + y, 0)), peak = weekly.indexOf(Math.max(...weekly));
+      const busiest = dowHours.indexOf(Math.max(...dowHours)), topHour = hours.indexOf(Math.max(...hours));
+      const hourLabel = h => `${h % 12 || 12}${h < 12 ? 'am' : 'pm'}`;
+      setCardDetails(document.querySelector('.card-streak'), `
+        <div class="ds-head">How you showed up</div>
+        ${section('The numbers', statGrid([
+          ['Active days', fmtNum(dayKeys.length), `of ${fmtNum(daysElapsedInRecapYear())} so far`],
+          ['Rest days', fmtNum(daysElapsedInRecapYear() - dayKeys.length)],
+          ['Longest streak', `${fmtNum(best.len)} days`, best.len ? `${fmtDate(best.start * 86400000)} – ${fmtDate((best.start + best.len - 1) * 86400000)}` : ''],
+          ['Biggest week', `${fmtNum(weekly[peak], 1)} h`, `week of ${fmtDate(new Date(RECAP_YEAR, 0, 1 + peak * 7))}`],
+          ['Busiest day', DOW[busiest], `${fmtNum(dowHours[busiest], 1)} h across the year`],
+          ['Usual start', hourLabel(topHour), `${fmtNum(hours[topHour] / acts.length * 100)}% of sessions`]
+        ]))}
+        ${section('Weekly hours', legend(keys) + barChart(weeks, { colors, height: 130, highlight: peak, highlightLabel: `${fmtNum(weekly[peak], 1)} h`, aria: 'Weekly training hours by sport' }))}
+        ${section('Day of the week', barChart(dowHours, { labels: DOW, colors: ['#FF7A45'], height: 100, highlight: busiest, highlightLabel: `${fmtNum(dowHours[busiest])} h`, aria: 'Hours by day of week' }))}
+        ${section('Start time', barChart(hours, { labels: hours.map((_, h) => (h % 6 === 0 ? hourLabel(h) : '')), colors: ['#FF7A45'], height: 100, highlight: topHour, highlightLabel: hourLabel(topHour), aria: 'Sessions by start hour' }))}`);
+
+      // Best month
+      const bm = stats.bestMonth ? stats.bestMonth.index : 0;
+      const inMonth = acts.filter(a => new Date(a.start_date).getMonth() === bm);
+      const avgMonthTime = totalTime / last, monthTime = inMonth.reduce((t, a) => t + (a.moving_time || 0), 0);
+      setCardDetails(document.querySelector('.card-month'), `
+        <div class="ds-head">${new Date(RECAP_YEAR, bm, 1).toLocaleDateString('en-US', { month: 'long' })}, up close</div>
+        ${section('The numbers', statGrid([
+          ['Sessions', fmtNum(inMonth.length)], ['Moving time', fmtHours(monthTime), avgMonthTime ? `${fmtNum((monthTime / avgMonthTime - 1) * 100)}% above your average month` : ''],
+          ['Active days', fmtNum(new Set(inMonth.map(a => new Date(a.start_date).getDate())).size)],
+          ['Climbing', fmtElev(inMonth.reduce((t, a) => t + (a.total_elevation_gain || 0), 0))]
+        ]))}
+        ${section('By sport', table([{ h: 'Sport' }, { h: 'Sessions', num: true }, { h: 'Distance', num: true }, { h: 'Time', num: true }],
+          keys.map(k => { const l = inMonth.filter(a => sportOf(a) === k); return l.length ? [sportMeta(k).short, fmtNum(l.length), fmtDist(l.reduce((t, a) => t + (a.distance || 0), 0), k), fmtHours(l.reduce((t, a) => t + (a.moving_time || 0), 0))] : null; }).filter(Boolean)))}
+        ${section('Biggest sessions', table([{ h: 'Sport' }, { h: 'Date' }, { h: 'Name', name: true }, { h: 'Time', num: true }],
+          [...inMonth].sort((a, b) => b.moving_time - a.moving_time).slice(0, 5).map(a => [sportCell(a), fmtDate(a.start_date), esc(a.name || ''), fmtClock(a.moving_time)])))}`);
+    }
+
+
+    // ============================================
     // DEMO MODE (?demo): realistic sample year, no Strava needed.
     // For portfolio visitors and design review. Routes are synthetic.
     // ============================================
@@ -4995,6 +5637,7 @@
     }
 
     function generateDemoActivities() {
+      // A triathlete building to an Ironman: swim/bike/run through the year, races in Feb, Mar, Apr, Jun and Sep.
       let seed = 2026;
       const rand = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
       const between = (a, b) => a + rand() * (b - a);
@@ -5014,7 +5657,6 @@
         }
         return pts;
       }
-
       function outAndBack(km) {
         const heading = between(0, 6.28), out = [], n = 40;
         for (let i = 0; i <= n; i++) {
@@ -5026,33 +5668,69 @@
       }
 
       const acts = [];
-      const end = Math.min(Date.now(), new Date(RECAP_YEAR + 1, 0, 1).getTime() - 1);
       let id = 1;
+      const end = Math.min(Date.now(), new Date(RECAP_YEAR + 1, 0, 1).getTime() - 1);
+      const add = (day, hour, o) => {
+        const start = new Date(day); start.setHours(hour, Math.floor(rand() * 50));
+        const km = o.km || 0, moving = Math.round(o.moving);
+        const isOutdoor = km > 0 && !o.indoor && o.route !== false;
+        acts.push({
+          id: id++, name: o.name, type: o.type, sport_type: o.type, start_date: start.toISOString(), start_date_local: start.toISOString(),
+          distance: km * 1000, moving_time: moving, elapsed_time: Math.round(moving * 1.06), total_elevation_gain: Math.round(o.climb || 0),
+          average_speed: km ? km * 1000 / moving : 0, max_speed: km ? km * 1000 / moving * 1.7 : 0,
+          has_heartrate: o.hr != null, average_heartrate: o.hr, max_heartrate: o.hr ? Math.round(o.hr + between(18, 32)) : undefined,
+          average_cadence: o.cadence, device_watts: !!o.watts, average_watts: o.watts, weighted_average_watts: o.watts ? Math.round(o.watts * between(1.04, 1.12)) : undefined,
+          kilojoules: o.watts ? Math.round(o.watts * moving / 1000) : undefined, trainer: !!o.indoor, workout_type: o.race || 0,
+          kudos_count: Math.floor(between(0, o.race ? 60 : 16)), pr_count: o.race || rand() < 0.05 ? 1 : 0, achievement_count: Math.floor(between(0, 4)),
+          calories: Math.round(moving / 60 * between(8, 12)),
+          map: { summary_polyline: isOutdoor ? encodePolyline(o.shape === 'out' ? outAndBack(km) : loopRoute(km)) : '' }
+        });
+      };
+      const RACES = {
+        '1-15': [['Run', 'Half Moon Bay 10K', 10, 0.86, 1]], '2-22': [['Run', 'Kaiser Half Marathon', 21.1, 0.9, 1]],
+        '3-12': [['Run', 'Spring Marathon', 42.2, 0.96, 1]],
+        '5-14': [['Swim', '70.3 Swim', 1.9], ['Ride', '70.3 Bike', 90], ['Run', '70.3 Run', 21.1, 1.0, 1]],
+        '8-13': [['Swim', 'Ironman Swim', 3.8], ['Ride', 'Ironman Bike', 180], ['Run', 'Ironman Run', 42.2, 1.15, 1]]
+      };
       for (let day = new Date(RECAP_YEAR, 0, 1); day.getTime() <= end; day.setDate(day.getDate() + 1)) {
         const dow = day.getDay(), month = day.getMonth();
-        const chance = dow === 0 || dow === 6 ? 0.8 : dow === 1 ? 0.25 : 0.5;
-        if (rand() > chance) continue;
-        const roll = rand(), start = new Date(day);
-        start.setHours(dow === 0 || dow === 6 ? 8 : rand() < 0.6 ? 6 : 18, Math.floor(rand() * 60));
-        let type = 'Run', km, route = null, climb;
-        const isMarathon = month === 3 && day.getDate() === 12;
-        if (isMarathon) { km = 42.2; climb = 180; }
-        else if (roll < 0.12) { type = 'WeightTraining'; km = 0; climb = 0; }
-        else if (roll < 0.32) { type = 'Ride'; km = between(25, dow === 6 ? 95 : 50); climb = km * between(6, 14); }
-        else { km = dow === 0 ? between(14, 24) : between(5, 12); climb = km * between(3, 12); }
-        if (km > 0) route = rand() < 0.75 || type === 'Ride' ? loopRoute(km) : outAndBack(km);
-        const pace = type === 'Ride' ? between(150, 190) : between(290, 360); // seconds per km
-        const moving = km > 0 ? km * pace : between(2400, 3600);
-        acts.push({
-          id: id++, name: isMarathon ? 'Marathon' : type === 'Ride' ? 'Morning Ride' : type === 'Run' ? (km > 14 ? 'Long Run' : 'Easy Run') : 'Strength',
-          type, sport_type: type, start_date: start.toISOString(), start_date_local: start.toISOString(),
-          distance: km * 1000, moving_time: Math.round(moving), elapsed_time: Math.round(moving * 1.08),
-          total_elevation_gain: Math.round(climb), average_speed: km > 0 ? 1000 / pace : 0, max_speed: km > 0 ? 1000 / pace * 1.6 : 0,
-          has_heartrate: true, average_heartrate: Math.round(between(132, 158)), max_heartrate: Math.round(between(165, 189)),
-          kudos_count: Math.floor(between(0, isMarathon ? 60 : 18)), pr_count: rand() < 0.06 || isMarathon ? 1 : 0,
-          achievement_count: Math.floor(between(0, 4)), calories: Math.round(moving / 60 * between(9, 12)), kilojoules: Math.round(km * 25),
-          map: { summary_polyline: route ? encodePolyline(route) : '' }
-        });
+        const f = (day.getTime() - new Date(RECAP_YEAR, 0, 1).getTime()) / (end - new Date(RECAP_YEAR, 0, 1).getTime()); // 0 → 1 across the year
+        const build = Math.min(1, 0.45 + month / 9);                        // volume builds to September
+        const runPace = 350 - 32 * f, rideKmh = 26 + 5 * f, swimPer100 = 130 - 18 * f; // seconds/km, km/h, seconds/100m
+        const race = RACES[`${month}-${day.getDate()}`];
+        if (race) {
+          race.forEach(([type, name, km, slow = 1, flag], i) => {
+            if (type === 'Run') add(day, 7 + i * 3, { type, name, km, moving: km * runPace * slow, climb: km * 4, hr: 158, cadence: 88, race: flag, shape: 'loop' });
+            if (type === 'Ride') add(day, 8, { type, name, km, moving: km / (rideKmh + 1.5) * 3600, climb: km * 9, hr: 142, cadence: 88, watts: 192, race: 0 });
+            if (type === 'Swim') add(day, 7, { type, name, km, moving: km * 10 * swimPer100 * 0.97, hr: 140, shape: 'out' });
+          });
+          continue;
+        }
+        // Swim Mon/Wed/Fri (pool), Saturday open water Jun–Sep
+        if ([1, 3, 5].includes(dow) && rand() < 0.8) {
+          const km = Math.round(between(1.6, 3.2) * build * 10) / 10 + 0.6;
+          add(day, 6, { type: 'Swim', name: 'Pool Swim', km, moving: km * 10 * swimPer100 * between(0.97, 1.05), hr: rand() < 0.5 ? Math.round(between(128, 140)) : undefined, route: false });
+        }
+        if (dow === 6 && month >= 5 && month <= 8 && rand() < 0.7) {
+          const km = Math.round(between(2, 4) * 10) / 10;
+          add(day, 7, { type: 'Swim', name: 'Open Water Swim', km, moving: km * 10 * swimPer100 * 1.04, hr: Math.round(between(132, 142)), shape: 'out' });
+        }
+        // Bike: Tue/Thu indoor, Saturday long ride
+        if ([2, 4].includes(dow) && rand() < 0.85) {
+          const mins = between(50, 80) * (0.8 + build * 0.4), watts = Math.round(between(175, 215) + 15 * f);
+          add(day, 18, { type: 'VirtualRide', name: 'Zwift Workout', km: mins / 60 * (rideKmh + 2), moving: mins * 60, climb: mins * 6, hr: Math.round(between(132, 148)), cadence: Math.round(between(86, 94)), watts, indoor: true });
+        }
+        if (dow === 6 && rand() < 0.9) {
+          const km = Math.round(between(55, 110) * build + (month === 6 && day.getDate() > 20 ? 70 : 0));
+          add(day, 9, { type: 'Ride', name: km > 140 ? 'Century Ride' : 'Long Ride', km, moving: km / rideKmh * 3600, climb: km * between(7, 15), hr: Math.round(between(128, 142)), cadence: Math.round(between(82, 90)), watts: Math.round(between(165, 195) + 12 * f) });
+        }
+        // Run: Wed tempo, Thu easy, Sunday long
+        if (dow === 3 && rand() < 0.8) { const km = between(8, 12); add(day, 18, { type: 'Run', name: 'Tempo Run', km, moving: km * runPace * 0.94, climb: km * 6, hr: Math.round(between(152, 162)), cadence: Math.round(between(86, 90)), shape: 'out' }); }
+        if (dow === 4 && rand() < 0.6) { const km = between(6, 10); add(day, 6, { type: 'Run', name: 'Easy Run', km, moving: km * runPace * 1.08, climb: km * 5, hr: Math.round(between(138, 146)), cadence: Math.round(between(84, 88)) }); }
+        if (dow === 0 && rand() < 0.9) { const km = Math.min(34, between(14, 22) * (0.75 + build * 0.5)); add(day, 7, { type: rand() < 0.2 ? 'TrailRun' : 'Run', name: km > 25 ? 'Long Run' : 'Sunday Run', km, moving: km * runPace * 1.05, climb: km * between(5, 18), hr: Math.round(between(142, 150)), cadence: Math.round(between(84, 88)) }); }
+        // Strength and the odd hike
+        if (dow === 2 && rand() < 0.5) add(day, 7, { type: 'WeightTraining', name: 'Strength', moving: between(2400, 3300) });
+        if (dow === 0 && month >= 5 && month <= 9 && rand() < 0.15) { const km = between(8, 16); add(day, 13, { type: 'Hike', name: 'Afternoon Hike', km, moving: km * 720, climb: km * 45 }); }
       }
       return acts;
     }
