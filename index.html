@@ -4344,11 +4344,8 @@
 
     function updateUIWithStats(stats) {
       if (athleteData) {
-        const nameEl = document.querySelector('.intro-name');
-        if (nameEl) {
-          const name = athleteData.firstname || 'Your';
-          nameEl.textContent = `${name}'s Athletic Journey`;
-        }
+        const headline = document.querySelector('.card-intro .intro-wrapped');
+        if (headline && athleteData.firstname) headline.textContent = `${athleteData.firstname}'s year in motion`;
       }
 
       const distUnit = getDistanceUnit();
@@ -5113,7 +5110,7 @@
           <svg class="longest-route" viewBox="0 0 300 300" aria-hidden="true"><path id="longestPath" d="${d}"></path></svg>
           <div class="longest-reveal">
             <div class="stat-huge">${h}<span class="stat-unit">h</span>&nbsp;${String(m).padStart(2, '0')}<span class="stat-unit">m</span></div>
-            <div class="context"><em>${date}</em>. ${nameLine}${multi && dist ? `: ${fmtDist(dist, 'run')} in one day` : ''}. ${time >= 8 * 3600 ? 'Hope there was a nap after.' : time >= 4 * 3600 ? 'That\'s a full workday.' : time >= 2 * 3600 ? 'Breakfast was earned.' : 'Short and sharp.'}</div>
+            <div class="context"><em>${date}</em>. ${nameLine}${multi && dist ? `: ${fmtDist(dist, 'run')} in one day` : ''}. ${day.some(isRace) ? 'The day the whole year was building toward.' : time >= 4 * 3600 ? 'A long day out, and you saw it through.' : 'Your biggest single day of the year.'}</div>
             ${multi ? `
               <div class="day-bar" role="img" aria-label="Time in each activity that day">${day.map(a => `<i style="flex:${a.moving_time};background:${sportMeta(sportOf(a)).color}"></i>`).join('')}</div>
               <div class="day-rows">${day.map(a => `<div class="day-row"><i style="background:${sportMeta(sportOf(a)).color}"></i><span class="day-name">${esc(a.name || sportMeta(sportOf(a)).short)}</span><span>${a.distance ? fmtDist(a.distance, sportOf(a)) : ''}</span><b>${fmtClock(a.moving_time)}</b></div>`).join('')}</div>`
@@ -5519,22 +5516,43 @@
 
     // ---------- Sport chapter cards ----------
 
+    // Small truths about a list of sessions, used to make the copy observant rather than generic.
+    function habits(list) {
+      const n = list.length || 1, hour = a => new Date(a.start_date).getHours(), dow = a => new Date(a.start_date).getDay();
+      return {
+        early: list.filter(a => hour(a) < 8).length / n,
+        evening: list.filter(a => hour(a) >= 17).length / n,
+        weekend: list.filter(a => dow(a) === 0 || dow(a) === 6).length / n
+      };
+    }
+    const whenLine = (list, what) => {
+      const h = habits(list);
+      if (h.early >= 0.5) return `Most of ${what} happened before 8am.`;
+      if (h.evening >= 0.5) return `Most of ${what} happened after work.`;
+      if (h.weekend >= 0.5) return `Most of ${what} happened on weekends.`;
+      return '';
+    };
+
     function sportStory(s) {
       const unit = s.key === 'swim' ? (isMetric() ? '/100m' : '/100yd') : s.key === 'ride' ? getSpeedUnit() : `/${getDistanceUnit()}`;
       if (s.key === 'swim') {
         const pool = isMetric() ? 25 : 22.86, lengths = Math.round(s.dist / pool);
         const pace = s.early.pace && s.recent.pace && monthsElapsed() >= 6 && s.recent.pace < s.early.pace
           ? ` Your pace dropped from <em>${fmtClock(s.early.pace)}</em> to <em>${fmtClock(s.recent.pace)} ${unit}</em>.` : '';
-        return `That's <em>${fmtNum(lengths)} lengths</em> of a 25 ${isMetric() ? 'm' : 'yd'} pool. Somebody count those?${pace}`;
+        const early = habits(s.list).early >= 0.5 ? ', most of them before the day had started' : '';
+        return `That's <em>${fmtNum(lengths)} lengths</em> of a 25 ${isMetric() ? 'm' : 'yd'} pool${early}.${pace}`;
       }
       if (s.key === 'run' && s.early.pace && s.recent.pace && monthsElapsed() >= 6) {
         const faster = s.recent.pace < s.early.pace;
         return faster
-          ? `Your average pace went from <em>${fmtClock(s.early.pace)}</em> to <em>${fmtClock(s.recent.pace)} ${unit}</em>. Same legs, faster.`
-          : `Your average pace went from <em>${fmtClock(s.early.pace)}</em> to <em>${fmtClock(s.recent.pace)} ${unit}</em>. Easy miles count too.`;
+          ? `Your average pace went from <em>${fmtClock(s.early.pace)}</em> to <em>${fmtClock(s.recent.pace)} ${unit}</em>. That's what months of showing up looks like.`
+          : `Your average pace went from <em>${fmtClock(s.early.pace)}</em> to <em>${fmtClock(s.recent.pace)} ${unit}</em>. Not every year is about speed.`;
       }
-      if (s.key === 'ride') return `You climbed <em>${fmtElev(s.elev)}</em> on the bike. That's Alpe d'Huez <em>${fmtNum(s.elev / 1071)} times</em>, all 21 hairpins each time.`;
-      if (s.key === 'walk') return `<em>${fmtHours(s.time)}</em> on foot. Recovery counts.`;
+      if (s.key === 'ride') {
+        const big = s.longest[0];
+        return `You climbed <em>${fmtElev(s.elev)}</em> on the bike, Alpe d'Huez <em>${fmtNum(s.elev / 1071)} times</em> over.${big ? ` The big one was ${fmtDist(big.distance, 'ride')} on ${fmtDate(big.start_date)}.` : ''}`;
+      }
+      if (s.key === 'walk') return `<em>${fmtHours(s.time)}</em> on foot, in between everything else.`;
       return `<em>${fmtNum(s.count)} ${sportMeta(s.key).noun}</em> and <em>${fmtHours(s.time)}</em> of work.`;
     }
 
@@ -5637,7 +5655,7 @@
         <div class="stat-content tri-hero">
           <div class="label">Ironman check · ${RECAP_YEAR}</div>
           <div class="tri-title">${all ? 'Every Ironman distance, covered. 🏅' : 'Your longest swim, ride and run against Ironman distances.'}</div>
-          ${all ? '<div class="context">You are an Ironman. Somebody had to say it.</div>' : ''}
+          ${all ? '<div class="context">You are an Ironman.</div>' : ''}
           <div class="tri-rows">
             ${rows.map(r => `
               <div class="tri-row">
@@ -6061,7 +6079,8 @@
 
       // Distance: share of hours by sport
       const earth = total / 40075000;
-      const distLine = earth >= 1 ? `You went around the Earth <em>${fmtNum(earth, 1)} times</em>. Lap complete.` : `That's <em>${fmtNum(earth * 100)}%</em> of the way around the Earth. The other ${fmtNum(100 - earth * 100)}% can wait.`;
+      const when = whenLine(acts, 'it');
+      const distLine = (earth >= 1 ? `You went around the Earth <em>${fmtNum(earth, 1)} times</em>.` : `That's <em>${fmtNum(earth * 100)}%</em> of the way around the Earth.`) + (when ? ` ${when}` : '');
       const shares = keys.map(k => ({ k, t: acts.filter(a => sportOf(a) === k).reduce((s, a) => s + (a.moving_time || 0), 0) }));
       setHero('.card-distance', `
         <div class="stat-content sport-hero">
@@ -6098,7 +6117,7 @@
         <div class="stat-content sport-hero">
           <div class="label">Elevation gained · ${RECAP_YEAR}</div>
           <div class="stat-huge"><span class="counter" data-target="${Math.round(getElevationValue(climbAll))}">0</span><span class="stat-unit">${getElevationUnit()}</span></div>
-          <div class="context">Enough to climb Everest <em>${fmtNum(climbAll / 8849, 1)} times</em> from sea level. No sherpa required.</div>
+          <div class="context">Enough to climb Everest <em>${fmtNum(climbAll / 8849, 1)} times</em> from sea level, every foot of it under your own power.</div>
           <svg class="ridge" viewBox="0 0 ${W} ${H}" role="img" aria-label="Elevation gained, added up across the year, with a mark for each Everest">
             <polygon points="0,${H - 18} ${line} ${W},${H - 18}" fill="#2A1408"/>
             ${marks}
@@ -6118,7 +6137,7 @@
         <div class="stat-content sport-hero streak-hero">
           <div class="label">Consistency · ${RECAP_YEAR}</div>
           <div class="stat-huge"><span class="counter" data-target="${dayKeys.length}">0</span><span class="stat-unit">days</span></div>
-          <div class="context">You moved on <em>${fmtNum(dayKeys.length / daysElapsedInRecapYear() * 100)}%</em> of days so far. ${dayKeys.length / daysElapsedInRecapYear() >= 0.8 ? 'Your couch misses you.' : dayKeys.length / daysElapsedInRecapYear() >= 0.5 ? 'That\'s a rhythm.' : 'Every one of them counted.'} <span id="streakNote"></span></div>
+          <div class="context">You moved on <em>${fmtNum(dayKeys.length / daysElapsedInRecapYear() * 100)}%</em> of days so far. ${dayKeys.length / daysElapsedInRecapYear() >= 0.8 ? 'At that point it\'s just who you are.' : dayKeys.length / daysElapsedInRecapYear() >= 0.5 ? 'Most days, you showed up.' : 'Every one of them counted.'} <span id="streakNote"></span></div>
           <div class="heatmap-container"><div class="heatmap" id="heatmap"></div></div>
         </div>`);
 
