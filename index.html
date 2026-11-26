@@ -2473,6 +2473,27 @@
     .races-ladder { width: 100%; margin-top: 24px; text-align: left; }
     .races-ladder svg { display: block; width: 100%; height: auto; }
     .races-ladder-head { display: flex; justify-content: space-between; margin-bottom: 6px; font: 500 10px 'DM Mono', ui-monospace, monospace; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dim); }
+    /* Longest day */
+    .longest-content.multi .longest-route { width: min(180px, 46vw); }
+    .day-bar { display: flex; gap: 3px; width: 100%; height: 12px; margin-top: 20px; border-radius: 6px; overflow: hidden; }
+    .day-bar i { display: block; min-width: 4px; }
+    .day-rows { width: 100%; margin-top: 10px; text-align: left; }
+    .day-row { display: grid; grid-template-columns: 10px minmax(0, 1fr) auto auto; gap: 10px; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+    .day-row i { width: 10px; height: 10px; border-radius: 3px; }
+    .day-row .day-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .day-row span:not(.day-name) { color: var(--dim); font-variant-numeric: tabular-nums; }
+    .day-row b { font-weight: 600; font-variant-numeric: tabular-nums; }
+
+    /* Year over year */
+    .yoy { width: 100%; margin-top: 16px; }
+    .yoy-line { font-size: 14px; color: var(--dim); }
+    .yoy-line b { font-weight: 600; }
+    .faster { color: var(--ember-text); }
+    .slower { color: var(--dim); }
+    .yoy-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-top: 10px; }
+    .yoy-chip { padding: 5px 10px; border-radius: 999px; background: var(--surface); border: 1px solid var(--border); font: 500 11px 'DM Mono', ui-monospace, monospace; }
+    .ds-sub { margin: 18px 0 8px; font: 500 10px 'DM Mono', ui-monospace, monospace; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dim); }
+    .ds-grid + .ds-table-wrap { margin-top: 14px; }
   </style>
 </head>
 
@@ -3802,7 +3823,10 @@
 
         activitiesData = allActivities;
         debugLog(`Total activities fetched: ${activitiesData.length}`);
-        await fetchRaceDetails(accessToken, allActivities);
+        await fetchRaceDetails(accessToken, allActivities, 20);
+        updateLoadingText(`Fetching ${RECAP_YEAR - 1} to compare...`);
+        previousYearActivities = await fetchPreviousYear(accessToken);
+        await fetchRaceDetails(accessToken, previousYearActivities, 10);
         showSportPicker(allActivities);
 
       } catch (error) {
@@ -4943,41 +4967,55 @@
       if (prefersReducedMotion()) currentAnim.finish();
     }
 
-    // Longest day card: the longest activity's route drawn as an SVG path, ends trimmed for privacy.
+    // Longest day: the calendar day with the most time moving, all sports added up.
+    // Its longest route draws in (ends trimmed for privacy), then the day's timeline appears.
+    function routePath(a, size = 300, pad = 12) {
+      const pts = a && a.map && a.map.summary_polyline ? trimRouteEnds(decodePolyline(a.map.summary_polyline), POSTER.TRIM_M) : null;
+      if (!pts || pts.length < 2) return '';
+      const lat0 = pts.reduce((sum, q) => sum + q[0], 0) / pts.length, k = Math.cos(lat0 * Math.PI / 180);
+      const xy = pts.map(q => [q[1] * k, -q[0]]);
+      const xs = xy.map(q => q[0]), ys = xy.map(q => q[1]);
+      const minX = Math.min(...xs), minY = Math.min(...ys), w = Math.max(...xs) - minX, h = Math.max(...ys) - minY;
+      const scale = (size - pad * 2) / Math.max(w, h, 1e-9), ox = (size - w * scale) / 2, oy = (size - h * scale) / 2;
+      return 'M' + xy.map(q => `${((q[0] - minX) * scale + ox).toFixed(1)} ${((q[1] - minY) * scale + oy).toFixed(1)}`).join('L');
+    }
+
     function updateLongestCard() {
-      const year = activitiesData.filter(a => new Date(a.start_date).getFullYear() === RECAP_YEAR && a.distance > 0);
-      if (!year.length) return;
-      const a = year.reduce((m, x) => (x.distance > m.distance ? x : m), year[0]);
-      const pts = a.map && a.map.summary_polyline ? trimRouteEnds(decodePolyline(a.map.summary_polyline), POSTER.TRIM_M) : null;
-      const path = document.getElementById('longestPath');
-      if (pts && pts.length > 1) {
-        const lat0 = pts.reduce((sum, q) => sum + q[0], 0) / pts.length, k = Math.cos(lat0 * Math.PI / 180);
-        const xy = pts.map(q => [q[1] * k, -q[0]]);
-        const xs = xy.map(q => q[0]), ys = xy.map(q => q[1]);
-        const minX = Math.min(...xs), minY = Math.min(...ys);
-        const span = Math.max(Math.max(...xs) - minX, Math.max(...ys) - minY, 1e-9), scale = 276 / span;
-        const ox = 150 - ((Math.max(...xs) - minX) * scale) / 2, oy = 150 - ((Math.max(...ys) - minY) * scale) / 2;
-        path.setAttribute('d', 'M' + xy.map(q => `${((q[0] - minX) * scale + ox).toFixed(1)} ${((q[1] - minY) * scale + oy).toFixed(1)}`).join('L'));
-        document.getElementById('longestNote').hidden = false;
-      } else {
-        path.setAttribute('d', '');
-        document.getElementById('longestNote').hidden = true;
-      }
-      const dist = getDistanceValue(a.distance);
-      document.getElementById('longestNum').textContent = dist >= 100 ? Math.round(dist).toLocaleString() : dist.toFixed(1);
-      document.getElementById('longestUnit').textContent = getDistanceUnit();
-      const date = new Date(a.start_date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-      document.getElementById('longestDate').innerHTML = `<em>${date}</em>${a.name ? `. ${a.name.replace(/[<>&]/g, '')}` : ''}`;
-      document.getElementById('longestTime').textContent = formatDuration(a.moving_time);
-      const isRide = /Ride/.test(a.sport_type || a.type || '');
-      if (isRide) {
-        document.getElementById('longestPace').textContent = getSpeedValue(a.average_speed || a.distance / (a.moving_time || 1)).toFixed(1);
-        document.getElementById('longestPaceLabel').textContent = getSpeedUnit();
-      } else {
-        document.getElementById('longestPace').textContent = formatPace((a.moving_time || 0) / (dist || 1));
-        document.getElementById('longestPaceLabel').textContent = `/${getDistanceUnit()}`;
-      }
-      document.getElementById('longestClimb').textContent = `${Math.round(getElevationValue(a.total_elevation_gain || 0)).toLocaleString()}${getElevationUnit()}`;
+      const hero = document.querySelector('.card-longest .hero-section');
+      const acts = activitiesData.filter(a => new Date(a.start_date).getFullYear() === RECAP_YEAR);
+      if (!hero || !acts.length) return;
+      const byDay = {};
+      acts.forEach(a => { const k = new Date(a.start_date).toDateString(); (byDay[k] = byDay[k] || []).push(a); });
+      const total = l => l.reduce((t, a) => t + (a.moving_time || 0), 0);
+      const day = Object.values(byDay).reduce((m, l) => (total(l) > total(m) ? l : m)).sort((a, b) => new Date(a.start_date) - new Date(b.start_date));
+      const time = total(day), dist = day.reduce((t, a) => t + (a.distance || 0), 0), climb = day.reduce((t, a) => t + (a.total_elevation_gain || 0), 0);
+      const avg = total(acts) / acts.length;
+      const routeAct = day.filter(a => a.map && a.map.summary_polyline).sort((a, b) => b.distance - a.distance)[0];
+      const d = routePath(routeAct);
+      const h = Math.floor(time / 3600), m = Math.round((time % 3600) / 60);
+      const date = new Date(day[0].start_date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+      const multi = day.length > 1, single = day[0], sp = sportOf(single);
+      const names = day.map(a => esc(a.name || sportMeta(sportOf(a)).short));
+      const nameLine = names.length > 2 ? `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}` : names.join(' and ');
+      hero.innerHTML = `
+        <div class="stat-content sport-hero longest-content${multi ? ' multi' : ''}">
+          <div class="label">Longest day · ${RECAP_YEAR}</div>
+          <svg class="longest-route" viewBox="0 0 300 300" aria-hidden="true"><path id="longestPath" d="${d}"></path></svg>
+          <div class="longest-reveal">
+            <div class="stat-huge">${h}<span class="stat-unit">h</span>&nbsp;${String(m).padStart(2, '0')}<span class="stat-unit">m</span></div>
+            <div class="context"><em>${date}</em>. ${nameLine}${multi && dist ? `: ${fmtDist(dist, 'run')} in one day` : ''}. That's <em>${fmtNum(time / avg, 1)}×</em> your average session.</div>
+            ${multi ? `
+              <div class="day-bar" role="img" aria-label="Time in each activity that day">${day.map(a => `<i style="flex:${a.moving_time};background:${sportMeta(sportOf(a)).color}"></i>`).join('')}</div>
+              <div class="day-rows">${day.map(a => `<div class="day-row"><i style="background:${sportMeta(sportOf(a)).color}"></i><span class="day-name">${esc(a.name || sportMeta(sportOf(a)).short)}</span><span>${a.distance ? fmtDist(a.distance, sportOf(a)) : ''}</span><b>${fmtClock(a.moving_time)}</b></div>`).join('')}</div>`
+            : `
+              <div class="sport-trio">
+                <div><b>${single.distance ? fmtNum(distValue(single.distance, sp).v, distValue(single.distance, sp).d) : '--'}</b><span>${single.distance ? distValue(single.distance, sp).u : 'distance'}</span></div>
+                <div><b>${single.distance ? paceText(single.moving_time, single.distance, sp).split(' ')[0] : '--'}</b><span>${sp === 'ride' ? getSpeedUnit() : sp === 'swim' ? 'per 100' : `per ${getDistanceUnit()}`}</span></div>
+                <div><b>${fmtNum(getElevationValue(climb))}</b><span>${getElevationUnit()} climbed</span></div>
+              </div>`}
+            ${d ? '<div class="route-note">Route: start and finish hidden</div>' : ''}
+          </div>
+        </div>`;
     }
 
     function createTimeBars(data) {
@@ -5075,6 +5113,7 @@
         debugLog('Demo mode: loading sample year.');
         const label = document.querySelector('.card-intro .intro-label');
         if (label) label.textContent = 'recap.fit · sample data';
+        previousYearActivities = generateDemoPreviousYear();
         showSportPicker(generateDemoActivities());
         return;
       }
@@ -5661,8 +5700,26 @@
 
     // Fetch full records for run races only (Strava returns splits and best efforts for runs).
     // Results are cached per activity so a revisit costs no requests.
-    async function fetchRaceDetails(token, acts) {
-      const races = acts.filter(a => sportOf(a) === 'run' && isRace(a)).sort((a, b) => b.distance - a.distance).slice(0, 20);
+    let previousYearActivities = [];
+
+    // Last year's activities, only to compare races. Any failure just means no comparison.
+    async function fetchPreviousYear(token) {
+      const y = RECAP_YEAR - 1, after = new Date(y, 0, 1).getTime() / 1000, before = new Date(y + 1, 0, 1).getTime() / 1000;
+      let out = [];
+      for (let page = 1; page <= 10; page++) {
+        try {
+          const res = await fetch(`https://www.strava.com/api/v3/athlete/activities?after=${after}&before=${before}&page=${page}&per_page=200`, { headers: { Authorization: `Bearer ${token}` } });
+          if (!res.ok) break;
+          const list = await res.json();
+          if (!list.length) break;
+          out = out.concat(list);
+        } catch (e) { break; }
+      }
+      return out;
+    }
+
+    async function fetchRaceDetails(token, acts, limit = 20) {
+      const races = acts.filter(a => sportOf(a) === 'run' && isRace(a)).sort((a, b) => b.distance - a.distance).slice(0, limit);
       let cache = {};
       try { cache = JSON.parse(localStorage.getItem('recap_race_details') || '{}'); } catch (e) { /* storage blocked */ }
       for (let i = 0; i < races.length; i++) {
@@ -5739,6 +5796,22 @@
       return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Pace for each ${isMetric() ? 'kilometre' : 'mile'} of ${esc(a.name)}">${out}</svg>`;
     }
 
+    function yearOverYear(runRaces) {
+      const prev = previousYearActivities.filter(a => sportOf(a) === 'run' && isRace(a));
+      if (!prev.length) return null;
+      const bestBy = list => { const m = {}; list.forEach(a => { const n = standardName(a.distance); if (n && (!m[n] || a.moving_time < m[n].moving_time)) m[n] = a; }); return m; };
+      const now = bestBy(runRaces), then = bestBy(prev);
+      const rows = STANDARD_RACES.map(([, n]) => n).filter(n => now[n] || then[n])
+        .map(n => ({ n, now: now[n], then: then[n], diff: now[n] && then[n] ? now[n].moving_time - then[n].moving_time : null }));
+      const eqBest = list => { const l = list.filter(a => a.distance >= 3000); return l.length ? l.reduce((b, a) => (marathonEquivalent(a) < marathonEquivalent(b) ? a : b)) : null; };
+      const KEY = ['1k', '1 mile', '5k', '10k', '10 mile', 'Half-Marathon', '30k', 'Marathon'];
+      const efforts = list => { const m = {}; list.forEach(a => ((a.detail && a.detail.best_efforts) || []).forEach(e => { if (KEY.includes(e.name) && (!m[e.name] || e.elapsed_time < m[e.name])) m[e.name] = e.elapsed_time; })); return m; };
+      const effNow = efforts(runRaces), effThen = efforts(prev);
+      return { prev, rows, fitNow: eqBest(runRaces), fitThen: eqBest(prev), effortRows: KEY.filter(k => effNow[k] && effThen[k]).map(k => ({ k, now: effNow[k], then: effThen[k] })) };
+    }
+    const deltaText = d => (d == null ? '—' : Math.abs(d) < 1 ? 'same' : `${d < 0 ? '−' : '+'}${fmtClock(Math.abs(d))}`);
+    const deltaCell = d => (d == null ? '—' : `<span class="${d < 0 ? 'faster' : 'slower'}">${deltaText(d)}</span>`);
+
     function racesHero(runRaces, tris) {
       const ranked = [...runRaces].filter(a => a.distance >= 3000).sort((a, b) => marathonEquivalent(a) - marathonEquivalent(b));
       const best = ranked[0];
@@ -5759,6 +5832,17 @@
           <div class="context">${fmtClock(best.moving_time)} for ${fmtDist(best.distance, 'run')}. That's worth a <em>${fmtClock(bestT)} marathon</em>.</div>
           <div class="races-ladder"><div class="races-ladder-head"><span>Race</span><span>Marathon equivalent</span></div>
             <svg viewBox="0 0 ${W} ${list.length * rowH}" role="img" aria-label="Races ranked by equivalent marathon time">${rows}</svg></div>
+          ${(() => {
+            const y = yearOverYear(runRaces);
+            // Like-for-like: only distances raced in both years.
+            const both = y ? y.rows.filter(r => r.diff != null) : [];
+            if (!both.length) return '';
+            const faster = both.filter(r => r.diff < 0).length;
+            const lead = faster === both.length ? `faster at every distance you raced both years`
+              : faster ? `faster at ${faster} of ${both.length} distances you raced both years` : `not faster yet at the distances you raced both years`;
+            const chips = both.slice(0, 3).map(r => `<span class="yoy-chip ${r.diff < 0 ? 'faster' : 'slower'}">${r.n} ${deltaText(r.diff)}</span>`).join('');
+            return `<div class="yoy"><div class="yoy-line">vs ${RECAP_YEAR - 1}: <b class="${faster ? 'faster' : 'slower'}">${lead}</b></div><div class="yoy-chips">${chips}</div></div>`;
+          })()}
           <div class="sport-trio">
             <div><b>${fmtNum(runRaces.length + tris.length)}</b><span>races</span></div>
             <div><b>${paceText(fastestPace.moving_time, fastestPace.distance, 'run').split(' ')[0]}</b><span>fastest pace</span></div>
@@ -5789,8 +5873,23 @@
 
       return `
         <div class="ds-head">Every race, compared</div>
-        ${section('All races', table([{ h: 'Date' }, { h: 'Race', name: true }, { h: 'Dist', num: true }, { h: 'Time', num: true }, { h: 'Pace', num: true }, { h: 'HR', num: true }],
-          chron.map(a => [fmtDate(a.start_date), esc(a.name || ''), fmtDist(a.distance, 'run'), fmtClock(a.moving_time), paceText(a.moving_time, a.distance, 'run'), a.average_heartrate ? fmtNum(a.average_heartrate) : '--'])))}
+        ${section('All races', table([{ h: 'Date' }, { h: 'Race', name: true }, { h: 'Dist', num: true }, { h: 'Time', num: true }, { h: `/${getDistanceUnit()}`, num: true }, { h: 'HR', num: true }],
+          chron.map(a => [fmtDate(a.start_date), esc(a.name || ''), fmtNum(getDistanceValue(a.distance), 1), fmtClock(a.moving_time), paceText(a.moving_time, a.distance, 'run').split(' ')[0], a.average_heartrate ? fmtNum(a.average_heartrate) : '--'])))}
+        ${(() => {
+          const y = yearOverYear(runRaces);
+          if (!y) return '';
+          const last = RECAP_YEAR - 1;
+          return section(`${RECAP_YEAR} vs ${last}`,
+            statGrid([
+              ['Races', `${fmtNum(runRaces.length)} vs ${fmtNum(y.prev.length)}`],
+              y.fitNow && y.fitThen ? ['Race fitness', deltaText(marathonEquivalent(y.fitNow) - marathonEquivalent(y.fitThen)), `${fmtClock(marathonEquivalent(y.fitThen))} → ${fmtClock(marathonEquivalent(y.fitNow))} marathon equivalent`] : null
+            ]) +
+            table([{ h: 'Distance' }, { h: String(last), num: true }, { h: String(RECAP_YEAR), num: true }, { h: 'Change', num: true }],
+              y.rows.map(r => [r.n, r.then ? fmtClock(r.then.moving_time) : '—', r.now ? fmtClock(r.now.moving_time) : '—', deltaCell(r.diff)])) +
+            (y.effortRows.length ? `<div class="ds-sub">Best efforts inside races</div>` + table([{ h: 'Distance' }, { h: String(last), num: true }, { h: String(RECAP_YEAR), num: true }, { h: 'Change', num: true }],
+              y.effortRows.map(r => [r.k.replace('-', ' '), fmtClock(r.then), fmtClock(r.now), deltaCell(r.now - r.then)])) : ''),
+            `Your best race time at each distance in each year. Race fitness compares each year's best marathon-equivalent race; Riegel flatters short races, so it can disagree with the like-for-like times above.`);
+        })()}
         ${section('Which race was best?', table([{ h: '#', num: true }, { h: 'Race', name: true }, { h: 'Time', num: true }, { h: 'Marathon eq.', num: true }],
           ranked.map((a, i) => [String(i + 1), esc(a.name || ''), fmtClock(a.moving_time), fmtClock(marathonEquivalent(a))])),
           'Each race converted to the marathon time it predicts (Riegel: time × (42.2 km ÷ distance)^1.06), so a 10K and a marathon can be compared fairly. Lower is better. Hilly courses and race-day heat will skew it.')}
@@ -5953,6 +6052,36 @@
       return out;
     }
 
+    // Race details as Strava's full record would give them: per-km and per-mile splits, best efforts.
+    function synthRaceDetail(a, between) {
+      const EFFORTS = [['400m', 400], ['1/2 mile', 804.67], ['1k', 1000], ['1 mile', 1609.34], ['2 mile', 3218.69], ['5k', 5000], ['10k', 10000], ['15k', 15000],
+        ['10 mile', 16093.4], ['20k', 20000], ['Half-Marathon', 21097.5], ['30k', 30000], ['Marathon', 42195]];
+      const fade = /Ironman/.test(a.name) ? 0.16 : /70\.3/.test(a.name) ? 0.07 : a.distance > 40000 ? 0.05 : a.distance > 20000 ? -0.025 : 0.01;
+      const splits = unit => {
+        const raw = []; let left = a.distance; const n = Math.ceil(a.distance / unit);
+        for (let i = 0; i < n; i++) { const d = Math.min(unit, left); left -= d; const x = n > 1 ? i / (n - 1) : 0.5; raw.push({ d, w: d * (1 + fade * (x - 0.5) * 2 + between(-0.02, 0.02)), x }); }
+        const total = raw.reduce((t, r) => t + r.w, 0);
+        return raw.map(r => { const t = Math.round(r.w / total * a.moving_time); return { distance: r.d, moving_time: t, elapsed_time: t, average_heartrate: Math.round(a.average_heartrate + (r.x - 0.5) * 9) }; });
+      };
+      a.detail = {
+        splits_metric: splits(1000), splits_standard: splits(1609.34),
+        best_efforts: EFFORTS.filter(([, d]) => d <= a.distance).map(([name, d]) => ({ name, distance: d, elapsed_time: Math.round(Math.min(a.moving_time, a.moving_time * Math.pow(d / a.distance, 1.06) * between(1.0, 1.025))) }))
+      };
+    }
+
+    function generateDemoPreviousYear() {
+      let seed = 2025;
+      const between = (lo, hi) => lo + ((seed = (seed * 16807) % 2147483647) / 2147483647) * (hi - lo);
+      const y = RECAP_YEAR - 1;
+      return [[2, 16, 'Half Moon Bay 10K', 10, 3100, 151], [3, 23, 'Kaiser Half Marathon', 21.1, 6850, 154], [4, 13, 'Spring Marathon', 42.2, 14550, 152],
+        [9, 19, 'Bay Bridge 10K', 10, 3020, 160], [10, 2, 'Turkey Trot 5K', 5, 1395, 166]].map(([m, d, name, km, t, hr], i) => {
+        const a = { id: 900000 + i, name, type: 'Run', sport_type: 'Run', start_date: new Date(y, m - 1, d, 8).toISOString(), distance: km * 1000,
+          moving_time: t, elapsed_time: t + 20, average_heartrate: hr, workout_type: 1, total_elevation_gain: km * 5, map: { summary_polyline: '' } };
+        synthRaceDetail(a, between);
+        return a;
+      });
+    }
+
     function generateDemoActivities() {
       // A triathlete building to an Ironman: swim/bike/run through the year, races in Feb, Mar, Apr, Jun and Sep.
       let seed = 2026;
@@ -6052,19 +6181,7 @@
       // Race details as Strava's full record would give them: per-km and per-mile splits, best efforts.
       const EFFORTS = [['400m', 400], ['1/2 mile', 804.67], ['1k', 1000], ['1 mile', 1609.34], ['2 mile', 3218.69], ['5k', 5000], ['10k', 10000], ['15k', 15000],
         ['10 mile', 16093.4], ['20k', 20000], ['Half-Marathon', 21097.5], ['30k', 30000], ['Marathon', 42195]];
-      acts.filter(a => a.workout_type === 1).forEach(a => {
-        const fade = /Ironman/.test(a.name) ? 0.16 : /70\.3/.test(a.name) ? 0.07 : a.distance > 40000 ? 0.05 : a.distance > 20000 ? -0.025 : 0.01;
-        const splits = unit => {
-          const raw = []; let left = a.distance; const n = Math.ceil(a.distance / unit);
-          for (let i = 0; i < n; i++) { const d = Math.min(unit, left); left -= d; const x = n > 1 ? i / (n - 1) : 0.5; raw.push({ d, w: d * (1 + fade * (x - 0.5) * 2 + between(-0.02, 0.02)), x }); }
-          const total = raw.reduce((t, r) => t + r.w, 0);
-          return raw.map(r => { const t = Math.round(r.w / total * a.moving_time); return { distance: r.d, moving_time: t, elapsed_time: t, average_heartrate: Math.round(a.average_heartrate + (r.x - 0.5) * 9) }; });
-        };
-        a.detail = {
-          splits_metric: splits(1000), splits_standard: splits(1609.34),
-          best_efforts: EFFORTS.filter(([, d]) => d <= a.distance).map(([name, d]) => ({ name, distance: d, elapsed_time: Math.round(Math.min(a.moving_time, a.moving_time * Math.pow(d / a.distance, 1.06) * between(1.0, 1.025))) }))
-        };
-      });
+      acts.filter(a => a.workout_type === 1).forEach(a => synthRaceDetail(a, between));
       return acts;
     }
 
