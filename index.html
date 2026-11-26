@@ -5048,8 +5048,10 @@
       const cumulative = [];
       days.reduce((sum, d, i) => (cumulative[i] = sum + d.metres), 0);
       let shown = 0;
-      return makeAnimation(3200, t => {
-        const k = Math.round(easeInOut(t) * days.length);
+      // Accelerate the whole way: January arrives a day at a time, then the year gathers pace.
+      const accelerate = t => Math.pow(t, 2.6);
+      return makeAnimation(3600, t => {
+        const k = Math.round(accelerate(t) * days.length);
         for (; shown < k; shown++) days[shown].el.classList.remove('pending');
         const last = days[Math.max(0, k - 1)];
         if (last) {
